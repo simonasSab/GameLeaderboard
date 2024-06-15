@@ -6,8 +6,8 @@ using System.Data;
 using System.Text.RegularExpressions;
 using Serilog;
 using MongoDB.Bson;
-using Amazon.Auth.AccessControlPolicy;
 using System.Numerics;
+
 
 namespace LeaderboardBackEnd.Repositories;
 
@@ -184,19 +184,49 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task UpdateLevelAsync(Level level)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _levels.UpdateOneAsync(Builders<Level>.Filter.Eq(x => x.MongoID, level.MongoID), Builders<Level>.Update.Set(x => x, level));
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Update at MongoDB failed.\n");
+        }
     }
     public async Task DeleteLevelAsync(int ID)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _levels.DeleteOneAsync(Builders<Level>.Filter.Eq(x => x.ID, ID));
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Deletion from MongoDB failed.\n");
+        }
     }
     public async Task<Level?> GetLevelAsync(int ID)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _levels.Find(x => x.ID == ID).FirstAsync();
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Single retrieval from MongoDB failed.\n");
+            return null;
+        }
     }
     public async Task<IEnumerable<Level>> GetAllLevelsAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _levels.Find(_ => true).ToListAsync();
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Retrieval from MongoDB failed.\n");
+            return null;
+        }
     }
 
 
@@ -214,18 +244,48 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task UpdateScoreAsync(Score score)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _scores.UpdateOneAsync(Builders<Score>.Filter.Eq(x => x.MongoID, score.MongoID), Builders<Score>.Update.Set(x => x, score));
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Update at MongoDB failed.\n");
+        }
     }
     public async Task DeleteScoreAsync(int ID)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _scores.DeleteOneAsync(Builders<Score>.Filter.Eq(x => x.ID, ID));
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Deletion from MongoDB failed.\n");
+        }
     }
     public async Task<Score?> GetScoreAsync(int ID)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _scores.Find(x => x.ID == ID).FirstAsync();
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Single retrieval from MongoDB failed.\n");
+            return null;
+        }
     }
     public async Task<IEnumerable<Score>> GetAllScoresAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _scores.Find(_ => true).ToListAsync();
+        }
+        catch (MongoWriteException)
+        {
+            Log.Error("Retrieval from MongoDB failed.\n");
+            return null;
+        }
     }
 }

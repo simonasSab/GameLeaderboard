@@ -45,8 +45,8 @@ public class Player
         get { return _creationDateTime; }
         set { _creationDateTime = value; }
     }
-    [NotMapped] [BsonId]
     private ObjectId _mongoID;
+    [NotMapped] [BsonId]
     public ObjectId MongoID
     {
         get { return _mongoID; }

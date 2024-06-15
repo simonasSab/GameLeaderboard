@@ -2,12 +2,10 @@
 using LeaderboardBackEnd.Enums;
 using LeaderboardBackEnd.Models;
 using MongoDB.Driver;
-using System.Data;
 using System.Text.RegularExpressions;
 using Serilog;
 using MongoDB.Bson;
-using System.Numerics;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaderboardBackEnd.Repositories;
 
@@ -51,7 +49,7 @@ public class MongoDBRepository : IMongoDBRepository
             await _levels.DeleteManyAsync(new BsonDocument());
             await _players.DeleteManyAsync(new BsonDocument());
             await _scores.DeleteManyAsync(new BsonDocument());
-            Log.Information($"{DateTime.Now} --- MongoDB cache cleared!\n");
+            Log.Information($"{DateTime.Now} --- MongoDB cache cleared!");
             await TruncateDatabaseStart(cachePeriod);
         }
     }
@@ -64,7 +62,7 @@ public class MongoDBRepository : IMongoDBRepository
         else if (collectionNameEnum.ToString() == "Scores")
             await _scores.DeleteManyAsync(new BsonDocument());
 
-        Log.Information($"Deleted all items in MongoDB collection \"{collectionNameEnum.ToString()}\"\n");
+        Log.Information($"Deleted all items in MongoDB collection \"{collectionNameEnum.ToString()}\"");
     }
 
     // Import to cache
@@ -74,9 +72,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _players.InsertManyAsync(players);
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Insertion into MongoDB failed.\n");
+            Log.Error($"Insertion into MongoDB failed ({e}).");
         }
     }
     public async Task ImportLevelsAsync(IEnumerable<Level> levels)
@@ -85,9 +83,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _levels.InsertManyAsync(levels);
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Insertion into MongoDB failed.\n");
+            Log.Error($"Insertion into MongoDB failed ({e}).");
         }
     }
     public async Task ImportScoresAsync(IEnumerable<Score> scores)
@@ -96,90 +94,22 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _scores.InsertManyAsync(scores);
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Insertion into MongoDB failed.\n");
+            Log.Error($"Insertion into MongoDB failed ({e}).");
         }
     }
 
-    // Players
-    public async Task InsertPlayerAsync(Player player)
-    {
-        try
-        {
-            await _players.InsertOneAsync(player);
-        }
-        catch (MongoWriteException)
-        {
-            Log.Error("Insertion into MongoDB failed.\n");
-        }
-    }
-    public async Task UpdatePlayerAsync(Player player)
-    {
-        try
-        {
-            await _players.UpdateOneAsync(Builders<Player>.Filter.Eq(x => x.MongoID, player.MongoID), Builders<Player>.Update.Set(x => x, player));
-        }
-        catch (MongoWriteException)
-        {
-            Log.Error("Update at MongoDB failed.\n");
-        }
-    }
-    public async Task DeletePlayerAsync(int ID)
-    {
-        try
-        {
-            await _players.DeleteOneAsync(Builders<Player>.Filter.Eq(x => x.ID, ID));
-        }
-        catch (MongoWriteException)
-        {
-            Log.Error("Deletion from MongoDB failed.\n");
-        }
-    }
-    public async Task<Player?> GetPlayerAsync(int ID)
-    {
-        try
-        {
-            return await _players.Find(x => x.ID == ID).FirstAsync();
-        }
-        catch (MongoWriteException)
-        {
-            Log.Error("Single retrieval from MongoDB failed.\n");
-            return null;
-        }
-    }
-    public async Task<IEnumerable<Player>>? GetAllPlayersAsync()
-    {
-        try
-        {
-            return await _players.Find(_ => true).ToListAsync();
-        }
-        catch (MongoWriteException)
-        {
-            Log.Error("Retrieval from MongoDB failed.\n");
-            return null;
-        }
-    }
-    public async Task<IEnumerable<Player>> GetAllPlayersAsync(string phrase) // Search
-    {
-        FilterDefinition<Player> filter = Builders<Player>.Filter.Regex(Regex.Replace("Username", @"\s+", ""), new BsonRegularExpression(Regex.Replace(phrase, @"\s+", ""), "i"));
-
-        Log.Information($"Trying to find \"{phrase}\" in Players...\n");
-
-        return await _players.Find(filter).SortBy(x => x.Username).ToListAsync();
-    }
-
-
-    // Levels
+    // Level
     public async Task InsertLevelAsync(Level level)
     {
         try
         {
             await _levels.InsertOneAsync(level);
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Insertion into MongoDB failed.\n");
+            Log.Error($"Insertion into MongoDB failed ({e}).");
         }
     }
     public async Task UpdateLevelAsync(Level level)
@@ -188,9 +118,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _levels.UpdateOneAsync(Builders<Level>.Filter.Eq(x => x.MongoID, level.MongoID), Builders<Level>.Update.Set(x => x, level));
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Update at MongoDB failed.\n");
+            Log.Error($"Update at MongoDB failed ({e}).");
         }
     }
     public async Task DeleteLevelAsync(int ID)
@@ -199,9 +129,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _levels.DeleteOneAsync(Builders<Level>.Filter.Eq(x => x.ID, ID));
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Deletion from MongoDB failed.\n");
+            Log.Error($"Deletion from MongoDB failed ({e}).");
         }
     }
     public async Task<Level?> GetLevelAsync(int ID)
@@ -210,36 +140,124 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _levels.Find(x => x.ID == ID).FirstAsync();
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Single retrieval from MongoDB failed.\n");
+            Log.Error($"Single retrieval from MongoDB failed ({e}).");
             return null;
         }
     }
-    public async Task<IEnumerable<Level>> GetAllLevelsAsync()
+    public async Task<IEnumerable<Level>?> GetAllLevelsAsync()
     {
         try
         {
             return await _levels.Find(_ => true).ToListAsync();
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Retrieval from MongoDB failed.\n");
+            Log.Error($"Retrieval from MongoDB failed ({e}).");
             return null;
         }
     }
+    public async Task<bool> LevelIDExists(int ID)
+    {
+        if (await _levels.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
+            return true;
+        return false;
+    }
 
 
-    // Scores
+    // Player
+    public async Task InsertPlayerAsync(Player player)
+    {
+        try
+        {
+            await _players.InsertOneAsync(player);
+        }
+        catch (MongoWriteException e)
+        {
+            Log.Error($"Insertion into MongoDB failed ({e}).");
+        }
+    }
+    public async Task UpdatePlayerAsync(Player player)
+    {
+        try
+        {
+            await _players.UpdateOneAsync(Builders<Player>.Filter.Eq(x => x.MongoID, player.MongoID), Builders<Player>.Update.Set(x => x, player));
+        }
+        catch (MongoWriteException e)
+        {
+            Log.Error($"Update at MongoDB failed ({e}).");
+        }
+    }
+    public async Task DeletePlayerAsync(int ID)
+    {
+        try
+        {
+            await _players.DeleteOneAsync(Builders<Player>.Filter.Eq(x => x.ID, ID));
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Deletion from MongoDB failed ({e}).");
+        }
+    }
+    public async Task<Player?> GetPlayerAsync(int ID)
+    {
+        try
+        {
+            return await _players.Find(x => x.ID == ID).FirstAsync();
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Single retrieval from MongoDB failed ({e}).");
+            return null;
+        }
+    }
+    public async Task<IEnumerable<Player>?> GetAllPlayersAsync()
+    {
+        try
+        {
+            return await _players.Find(_ => true).ToListAsync();
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            return null;
+        }
+    }
+    public async Task<IEnumerable<Player>?> GetAllPlayersAsync(string phrase) // Search
+    {
+        FilterDefinition<Player> filter = Builders<Player>.Filter.Regex(Regex.Replace("Username", @"\s+", ""), new BsonRegularExpression(Regex.Replace(phrase, @"\s+", ""), "i"));
+
+        Log.Information($"Trying to find \"{phrase}\" in Players...");
+
+        try
+        {
+            return await _players.Find(filter).SortBy(x => x.Username).ToListAsync();
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            return null;
+        }
+    }
+    public async Task<bool> PlayerIDExists(int ID)
+    {
+        if (await _players.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
+            return true;
+        return false;
+    }
+
+
+    // Score
     public async Task InsertScoreAsync(Score score)
     {
         try
         {
             await _scores.InsertOneAsync(score);
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Insertion into MongoDB failed.\n");
+            Log.Error($"Insertion into MongoDB failed ({e}).");
         }
     }
     public async Task UpdateScoreAsync(Score score)
@@ -248,9 +266,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _scores.UpdateOneAsync(Builders<Score>.Filter.Eq(x => x.MongoID, score.MongoID), Builders<Score>.Update.Set(x => x, score));
         }
-        catch (MongoWriteException)
+        catch (MongoWriteException e)
         {
-            Log.Error("Update at MongoDB failed.\n");
+            Log.Error($"Update at MongoDB failed ({e}).");
         }
     }
     public async Task DeleteScoreAsync(int ID)
@@ -259,9 +277,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             await _scores.DeleteOneAsync(Builders<Score>.Filter.Eq(x => x.ID, ID));
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Deletion from MongoDB failed.\n");
+            Log.Error($"Deletion from MongoDB failed ({e}).");
         }
     }
     public async Task<Score?> GetScoreAsync(int ID)
@@ -270,22 +288,62 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _scores.Find(x => x.ID == ID).FirstAsync();
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Single retrieval from MongoDB failed.\n");
+            Log.Error($"Single retrieval from MongoDB failed ({e}).");
             return null;
         }
     }
-    public async Task<IEnumerable<Score>> GetAllScoresAsync()
+    public async Task<IEnumerable<Score>?> GetAllScoresAsync()
     {
         try
         {
             return await _scores.Find(_ => true).ToListAsync();
         }
-        catch (MongoWriteException)
+        catch (MongoException e)
         {
-            Log.Error("Retrieval from MongoDB failed.\n");
+            Log.Error($"Retrieval from MongoDB failed ({e}).");
             return null;
         }
+    }
+    public async Task<IEnumerable<Score>?> GetAllScoresAsync(int searchID, bool playerOrLevel) // Search by player OR level ID
+    {      
+        try
+        {
+            if (playerOrLevel)
+            {
+                Log.Information($"Trying to find Scores by Player ID: {searchID}...");
+                return await _scores.Find(x => x.PlayerID == searchID).SortBy(x => x.LevelID).ThenBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+            }
+            else
+            {
+                Log.Information($"Trying to find Scores by Level ID: {searchID}...");
+                return await _scores.Find(x => x.LevelID == searchID).SortBy(x => x.PlayerID).ThenBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+            }
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Search in MongoDB failed ({e}).");
+            return null;
+        }
+    }
+    public async Task<IEnumerable<Score>?> GetAllScoresAsync(int playerID, int levelID) // Search by player AND level ID
+    {
+        try
+        {
+            Log.Information($"Trying to find Scores by Player ID: {playerID} and Level ID: {levelID}...");
+            return await _scores.Find(x => x.PlayerID == playerID && x.LevelID == levelID).SortBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+        }
+        catch (MongoException e)
+        {
+            Log.Error($"Search in MongoDB failed ({e}).");
+            return null;
+        }
+    }
+    public async Task<bool> ScoreIDExists(int ID)
+    {
+        if (await _scores.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
+            return true;
+        return false;
     }
 }

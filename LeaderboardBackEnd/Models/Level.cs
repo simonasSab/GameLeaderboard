@@ -8,8 +8,8 @@ namespace LeaderboardBackEnd.Models;
 [Table("Levels")]
 public class Level
 {
-    [Key]
     private int _id;
+    [Key]
     public int ID
     {
         get { return _id; }
@@ -22,9 +22,8 @@ public class Level
         get { return _maxScore; }
         set { _maxScore = value; }
     }
-
-    [NotMapped] [BsonId]
     private ObjectId _mongoID;
+    [NotMapped] [BsonId]
     public ObjectId MongoID
     {
         get { return _mongoID; }

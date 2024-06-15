@@ -6,6 +6,7 @@ using LeaderboardBackEnd.Repositories;
 using LeaderboardBackEnd.Databases;
 using LeaderboardBackEnd.Models;
 using LeaderboardBackEnd.Services;
+using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardBackEnd;
 
@@ -33,7 +34,7 @@ public class Program
         try
         {
             var result = client.GetDatabase("admin").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
-            Log.Information("Pinged your deployment. You successfully connected to MongoDB!\n");
+            Log.Information("Pinged your deployment. You successfully connected to MongoDB!");
         }
         catch (Exception ex)
         {
@@ -41,7 +42,7 @@ public class Program
         }
 
         // Initialize server DB and back end service
-        _databaseRepository = new DatabaseRepository();
+        _databaseRepository = new DatabaseRepository("Server=DESKTOP-OD4Q280;Database=GameLeaderboard;Integrated Security=True;TrustServerCertificate=true;");
         _leaderboardService = new LeaderboardService(_databaseRepository, _mongoDBRepository);
 
         RunTasks();
@@ -49,6 +50,6 @@ public class Program
 
     public static void RunTasks()
     {
-        Log.Information("\nHello!\nConsole application is not implemented, please use API and Website.\n");
+        Log.Information("Hello! Console application is not implemented, please use API and Website.");
     }
 }

@@ -82,7 +82,7 @@ public class DatabaseRepository : IDatabaseRepository
     }
 
     // Score
-    public bool InsertScore(Score item, out Score newItem)
+    public bool InsertScore(Score? item, out Score newItem)
     {
         newItem = item;
         if (item == null)
@@ -147,26 +147,68 @@ public class DatabaseRepository : IDatabaseRepository
         else
             return _dbContext.Scores.Where(x => x.LevelID == searchID).ToList();
     }
+    public IEnumerable<Score> GetAllScores(int playerID, int levelID) // Search by player AND level ID
+    {
+        return _dbContext.Scores.Where(x => x.PlayerID == playerID || x.LevelID == levelID).ToList();
+    }
 
     // Level
-    public bool InsertLevel(Level item, out Level newItem)
+    public bool InsertLevel(Level? item, out Level newItem)
     {
-        throw new NotImplementedException();
+        newItem = item;
+        if (item == null)
+            return false;
+
+        _dbContext.Add(item);
+        _dbContext.SaveChanges();
+        if (item.ID > 0)
+        {
+            newItem = item;
+            return true;
+        }
+        _dbContext.Remove(item);
+        _dbContext.SaveChanges();
+        return false;
     }
     public bool UpdateLevel(Level? item, out Level updatedItem)
     {
-        throw new NotImplementedException();
+        // Keep updated object as updatedItem
+        updatedItem = item;
+        if (item == null)
+            return false;
+        // Find current object from DB and keep as item
+        item = _dbContext.Levels.Find(item.ID);
+        // Update value in DB
+        _dbContext.Update(updatedItem);
+        _dbContext.SaveChanges();
+        // Check if updatedItem (returned from DB) was updated
+        if (!updatedItem.Equals(item))
+            return true;
+        return false;
     }
     public bool DeleteLevel(int ID)
     {
-        throw new NotImplementedException();
+        Level? item = GetLevel(ID);
+        if (item == null)
+        {
+            Log.Error("ERROR: ID was not deleted from database\n");
+            return false;
+        }
+        _dbContext.Levels.Remove(item);
+        _dbContext.SaveChanges();
+
+        if (!_dbContext.Scores.Any(x => x.ID == ID))
+            return true;
+        else
+            Log.Error("ERROR: ID was not deleted from database\n");
+        return false;
     }
     public Level? GetLevel(int ID)
     {
-        throw new NotImplementedException();
+        return _dbContext.Levels.Find(ID);
     }
     public IEnumerable<Level> GetAllLevels()
     {
-        throw new NotImplementedException();
+        return _dbContext.Levels.ToList();
     }
 }

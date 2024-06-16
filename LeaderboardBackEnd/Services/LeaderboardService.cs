@@ -10,6 +10,7 @@ using System.Net;
 using System.Linq;
 using Serilog;
 using System.Numerics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace LeaderboardBackEnd.Services;
 
@@ -78,11 +79,25 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdateLevelAsync(Level level)
     {
-        throw new NotImplementedException();
+        if (_database.UpdateLevel(level, out Level updatedLevel))
+        {
+            Log.Information($"Updated Level: {updatedLevel.ToString()}");
+            await _cache.UpdateLevelAsync(level);
+            return true;
+        }
+        Log.Error($"Level update in database failed.");
+        return false;
     }
-    public async Task<bool> DeleteLevelAsync(Level level)
+    public async Task<bool> DeleteLevelAsync(int ID)
     {
-        throw new NotImplementedException();
+        if (_database.DeleteLevel(ID))
+        {
+            Log.Information($"Deleted Level with ID:{ID} from database");
+            await _cache.DeleteLevelAsync(ID);
+            return true;
+        }
+        Log.Error($"Level deletion from database failed.");
+        return false;
     }
     public async Task<IEnumerable<Level>?> GetAllLevelsAsync()
     {
@@ -129,11 +144,25 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdatePlayerAsync(Player player)
     {
-        throw new NotImplementedException();
+        if (_database.UpdatePlayer(player, out Player updatedPlayer))
+        {
+            Log.Information($"Updated Player: {updatedPlayer.ToString()}");
+            await _cache.UpdatePlayerAsync(player);
+            return true;
+        }
+        Log.Error($"Player update in database failed.");
+        return false;
     }
-    public async Task<bool> DeletePlayerAsync(Player player)
+    public async Task<bool> DeletePlayerAsync(int ID)
     {
-        throw new NotImplementedException();
+        if (_database.DeletePlayer(ID))
+        {
+            Log.Information($"Deleted Player with ID:{ID} from database");
+            await _cache.DeletePlayerAsync(ID);
+            return true;
+        }
+        Log.Error($"Player deletion from database failed.");
+        return false;
     }
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync()
     {
@@ -180,11 +209,25 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdateScoreAsync(Score score)
     {
-        throw new NotImplementedException();
+        if (_database.UpdateScore(score, out Score updatedScore))
+        {
+            Log.Information($"Updated Score: {updatedScore.ToString()}");
+            await _cache.UpdateScoreAsync(score);
+            return true;
+        }
+        Log.Error($"Score update in database failed.");
+        return false;
     }
-    public async Task<bool> DeleteScoreAsync(Score score)
+    public async Task<bool> DeleteScoreAsync(int ID)
     {
-        throw new NotImplementedException();
+        if (_database.DeleteScore(ID))
+        {
+            Log.Information($"Deleted Score with ID:{ID} from database");
+            await _cache.DeleteScoreAsync(ID);
+            return true;
+        }
+        Log.Error($"Score deletion from database failed.");
+        return false;
     }
     public async Task<IEnumerable<Score>?> GetAllScoresAsync()
     {

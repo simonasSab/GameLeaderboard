@@ -75,7 +75,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
     public async Task ImportLevelsAsync(IEnumerable<Level> levels)
@@ -87,7 +87,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
     public async Task ImportScoresAsync(IEnumerable<Score> scores)
@@ -99,7 +99,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
 
@@ -113,7 +113,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
     public async Task UpdateLevelAsync(Level level)
@@ -125,7 +125,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at MongoDB failed ({e}).");
+            Log.Error($"Update at cache failed ({e}).");
         }
     }
     public async Task DeleteLevelAsync(int ID)
@@ -139,7 +139,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Deletion from MongoDB failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e}).");
             }
         }
     }
@@ -153,7 +153,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e}).");
                 return null;
             }
         }
@@ -167,7 +167,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoException e)
         {
-            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e}).");
             return null;
         }
     }
@@ -190,7 +190,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
     public async Task UpdatePlayerAsync(Player player)
@@ -202,7 +202,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at MongoDB failed ({e}).");
+            Log.Error($"Update at cache failed ({e}).");
         }
     }
     public async Task DeletePlayerAsync(int ID)
@@ -216,7 +216,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Deletion from MongoDB failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e}).");
             }
         }
     }
@@ -230,7 +230,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e}).");
                 return null;
             }
         }
@@ -244,7 +244,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoException e)
         {
-            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e}).");
             return null;
         }
     }
@@ -260,7 +260,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoException e)
         {
-            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e}).");
             return null;
         }
     }
@@ -283,7 +283,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into MongoDB failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e}).");
         }
     }
     public async Task UpdateScoreAsync(Score score)
@@ -295,7 +295,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at MongoDB failed ({e}).");
+            Log.Error($"Update at cache failed ({e}).");
         }
     }
     public async Task DeleteScoreAsync(int ID)
@@ -309,7 +309,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Deletion from MongoDB failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e}).");
             }
         }
     }
@@ -323,7 +323,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e}).");
                 return null;
             }
         }
@@ -337,7 +337,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoException e)
         {
-            Log.Error($"Retrieval from MongoDB failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e}).");
             return null;
         }
     }
@@ -359,7 +359,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoException e)
         {
-            Log.Error($"Search in MongoDB failed ({e}).");
+            Log.Error($"Search in cache failed ({e}).");
             return null;
         }
     }
@@ -374,7 +374,7 @@ public class MongoDBRepository : IMongoDBRepository
             }
             catch (MongoException e)
             {
-                Log.Error($"Search in MongoDB failed ({e}).");
+                Log.Error($"Search in cache failed ({e}).");
                 return null;
             }
         }

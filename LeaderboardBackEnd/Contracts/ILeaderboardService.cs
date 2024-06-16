@@ -4,8 +4,14 @@ namespace LeaderboardBackEnd.Contracts;
 
 public interface ILeaderboardService
 {
+    // Cache cleaning
     void ToggleCacheCleaning(int cachePeriod);
     bool GetCacheCleaningON();
+
+    //Random object insertion
+    Task InsertRandomLevelAsync();
+    Task InsertRandomPlayerAsync();
+    Task InsertRandomScoreAsync();
 
     // Level
     Task<bool> InsertLevelAsync(Level level);

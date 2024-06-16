@@ -16,6 +16,7 @@ public class Program
     static IDatabaseRepository _databaseRepository { get; set; }
     static IMongoDBRepository _mongoDBRepository { get; set; }
     static ILeaderboardService _leaderboardService { get; set; }
+    static ICreationService _creationService { get; set; }
 
     public static void Main(string[] args)
     {
@@ -43,7 +44,8 @@ public class Program
 
         // Initialize server DB and back end service
         _databaseRepository = new DatabaseRepository("Server=DESKTOP-OD4Q280;Database=GameLeaderboard;Integrated Security=True;TrustServerCertificate=true;");
-        _leaderboardService = new LeaderboardService(_databaseRepository, _mongoDBRepository);
+        _creationService = new CreationService(_databaseRepository);
+        _leaderboardService = new LeaderboardService(_databaseRepository, _mongoDBRepository, _creationService);
 
         RunTasks();
     }

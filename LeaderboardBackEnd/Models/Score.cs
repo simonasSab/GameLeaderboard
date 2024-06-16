@@ -9,51 +9,35 @@ namespace LeaderboardBackEnd.Models;
 public class Score
 {
     [Key]
-    private int _id;
-    public int ID
-    {
-        get { return _id; }
-        set { _id = value; }
-    }
+    public int ID { get; set; }
+
     [ForeignKey("Player")]
-    private int _playerID;
-    public int PlayerID
-    {
-        get { return _playerID; }
-        set { _playerID = value; }
-    }
+    public int PlayerID {  get; set; }
+    public Player Player { get; set; }
+    
     [ForeignKey("Level")]
-    private int _levelID;
-    public int LevelID
-    {
-        get { return _levelID; }
-        set { _levelID = value; }
-    }
+    public int LevelID { get; set; }
+    public Level Level { get; set; }
+
     private int _points;
     public int Points
     {
         get { return _points; }
         set { _points = value; }
     }
+    
     private TimeSpan _time;
     public TimeSpan Time
     {
         get { return _time; }
         set { _time = value; }
     }
-    private DateTime _creationDateTime = DateTime.Now;
-    public DateTime CreationDateTime
-    {
-        get { return _creationDateTime; }
-        set { _creationDateTime = value; }
-    }
-    private ObjectId _mongoID;
+
+    public DateTime CreationDateTime { get; set; }
+    
     [NotMapped] [BsonId]
-    public ObjectId MongoID
-    {
-        get { return _mongoID; }
-        set { _mongoID = value; }
-    }
+    public ObjectId MongoID { get; set; }
+
 
     public Score()
     { }
@@ -77,6 +61,11 @@ public class Score
         Time = time;
         CreationDateTime = creationDateTime;
         this.MongoID = mongoID;
+    }
+
+    public override string ToString()
+    {
+        return $"ID {ID}, PlayerID {PlayerID}, LevelID {LevelID}, {Points} points, time: {Time:mm:ss:fff} ({CreationDateTime})";
     }
 
     public override bool Equals(object? obj)

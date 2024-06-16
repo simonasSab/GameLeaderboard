@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,13 +9,9 @@ namespace LeaderboardBackEnd.Models;
 [Table("Levels")]
 public class Level
 {
-    private int _id;
     [Key]
-    public int ID
-    {
-        get { return _id; }
-        set { _id = value; }
-    }
+    public int ID { get; set; }
+    public ICollection<Score> Scores { get; set; } // this.ID is FK for Score
 
     private int _maxScore;
     public int MaxScore
@@ -22,13 +19,9 @@ public class Level
         get { return _maxScore; }
         set { _maxScore = value; }
     }
-    private ObjectId _mongoID;
+
     [NotMapped] [BsonId]
-    public ObjectId MongoID
-    {
-        get { return _mongoID; }
-        set { _mongoID = value; }
-    }
+    public ObjectId MongoID { get; set; }
 
     public Level()
     { }
@@ -41,6 +34,11 @@ public class Level
         ID = iD;
         MaxScore = maxScore;
         this.MongoID = mongoID;
+    }
+
+    public override string ToString()
+    {
+        return $"Level no. {ID}, max score {MaxScore}";
     }
 
     public override bool Equals(object? obj)

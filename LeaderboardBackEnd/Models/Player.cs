@@ -9,49 +9,31 @@ namespace LeaderboardBackEnd.Models;
 public class Player
 {
     [Key]
-    private int _id;
-    public int ID
-    {
-        get { return _id; }
-        set { _id = value; }
-    }
-    private string _username;
-    public string Username
-    {
-        get { return _username; }
-        set { _username = value; }
-    }
+    public int ID { get; set; }
+    public ICollection<Score> Scores { get; set; } // this.ID is FK for Score
+
+    public string Username { get; set; }
+
     private string _password;
     public string Password
     {
         get { return _password; }
         set { _password = value; }
     }
+
     private string _email;
     public string Email
     {
         get { return _email; }
         set { _email = value; }
     }
-    private TimeSpan _timePlayed = TimeSpan.Zero;
-    public TimeSpan TimePlayed
-    {
-        get { return _timePlayed; }
-        set { _timePlayed = value; }
-    }
+
+    public TimeSpan TimePlayed { get; set; } = TimeSpan.Zero;
     private DateTime _creationDateTime = DateTime.Now;
-    public DateTime CreationDateTime
-    {
-        get { return _creationDateTime; }
-        set { _creationDateTime = value; }
-    }
-    private ObjectId _mongoID;
+    public DateTime CreationDateTime { get; set; }
     [NotMapped] [BsonId]
-    public ObjectId MongoID
-    {
-        get { return _mongoID; }
-        set { _mongoID = value; }
-    }
+    public ObjectId MongoID { get; set; }
+
 
     public Player()
     { }
@@ -70,6 +52,11 @@ public class Player
         TimePlayed = timePlayed;
         CreationDateTime = creationDateTime;
         this.MongoID = mongoID;
+    }
+
+    public override string ToString()
+    {
+        return $"ID {ID}, username {Username}, time played {TimePlayed:hh:mm:ss} since {CreationDateTime}";
     }
 
     public override bool Equals(object? obj)

@@ -5,6 +5,7 @@ using LeaderboardBackEnd.Services;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +22,10 @@ builder.Services.AddSingleton<IDatabaseRepository, DatabaseRepository>(_ => new 
 // Add MongoDB cache
 builder.Services.AddSingleton<IMongoClient, MongoClient>(sp => new MongoClient(builder.Configuration.GetConnectionString("MongoDb")));
 builder.Services.AddSingleton<IMongoDBRepository, MongoDBRepository>();
-// Add RentService
-builder.Services.AddSingleton<ILeaderboardService, LeaderboardService>(_ => new LeaderboardService(_.GetService<IDatabaseRepository>(), _.GetService<IMongoDBRepository>()));
+// Add services
+builder.Services.AddSingleton<ICreationService, CreationService>(_ => new CreationService(_.GetService<IDatabaseRepository>()));
+builder.Services.AddSingleton<ILeaderboardService, LeaderboardService>
+    (_ => new LeaderboardService(_.GetService<IDatabaseRepository>(), _.GetService<IMongoDBRepository>(), _.GetService<ICreationService>()));
 
 var app = builder.Build();
 

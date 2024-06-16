@@ -93,6 +93,10 @@ public class DatabaseRepository : IDatabaseRepository
             return false;
         }
     }
+    public int LevelsCount()
+    {
+        return _dbContext.Levels.Count();
+    }
 
     // Player
     public bool InsertPlayer(Player item, out Player newItem)
@@ -177,6 +181,14 @@ public class DatabaseRepository : IDatabaseRepository
             Log.Information($"ID: {ID} does not exist in database");
             return false;
         }
+    }
+    public async Task<bool> UsernameIsTaken(string username)
+    {
+        return await _dbContext.Players.AnyAsync(x => x.Username == username);
+    }
+    public int PlayersCount()
+    {
+        return _dbContext.Players.Count();
     }
 
     // Score
@@ -267,5 +279,9 @@ public class DatabaseRepository : IDatabaseRepository
             Log.Information($"ID: {ID} does not exist in database");
             return false;
         }
+    }
+    public int ScoresCount()
+    {
+        return _dbContext.Scores.Count();
     }
 }

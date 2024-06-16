@@ -1,15 +1,7 @@
 ﻿using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Models;
-using LeaderboardBackEnd.Databases;
-using LeaderboardBackEnd.Repositories;
-using LeaderboardBackEnd.Enums;
-using MongoDB;
-using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Net;
-using System.Linq;
 using Serilog;
-using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardBackEnd.Services;
 
@@ -17,12 +9,14 @@ public class LeaderboardService : ILeaderboardService
 {
     private IDatabaseRepository _database { get; set; }
     private IMongoDBRepository _cache { get; set; }
+    private ICreationService _creationService { get; set; }
     private bool CacheCleaningON { get; set; } = false;
 
-    public LeaderboardService(IDatabaseRepository databaseRepository, IMongoDBRepository mongoDBRepository)
+    public LeaderboardService(IDatabaseRepository databaseRepository, IMongoDBRepository mongoDBRepository, ICreationService creationService)
     {
         _database = databaseRepository;
         _cache = mongoDBRepository;
+        _creationService = creationService;
     }
 
     // Cache cleaning
@@ -46,7 +40,34 @@ public class LeaderboardService : ILeaderboardService
         }
     }
 
-    // Random  generation
+    // Random object insertion
+    public async Task InsertRandomLevelAsync()
+    {
+        Random random = new();
+        Level level = new(random.Next(10, 51));
+
+        _database.InsertLevel(level, out Level newLevel);
+        Log.Information($"New level: {newLevel.ToString()}");
+        await _cache.InsertLevelAsync(newLevel);
+    }
+    public async Task InsertRandomPlayerAsync()
+    {
+        _database.InsertPlayer(await _creationService.CreateRandomPlayerAsync(), out Player newPlayer);
+        Log.Information($"New player: {newPlayer.ToString()}");
+        await _cache.InsertPlayerAsync(newPlayer);
+    }
+    public async Task InsertRandomScoreAsync()
+    {
+        if (_database.InsertScore(await _creationService.CreateRandomScoreAsync(), out Score newScore))
+        {
+            Log.Information($"New score: {newScore.ToString()}");
+            await _cache.InsertScoreAsync(newScore);
+        }
+        else
+        {
+            Log.Error($"New score not inserted");
+        }
+    }
 
     // Level
     public async Task<bool> InsertLevelAsync(Level level)
@@ -115,10 +136,6 @@ public class LeaderboardService : ILeaderboardService
         }
         await _cache.ImportLevelsAsync(levels);
         return levels;
-    }
-    public async Task<bool> LevelIDExistsAsync(int ID)
-    {
-        throw new NotImplementedException();
     }
 
     // Player

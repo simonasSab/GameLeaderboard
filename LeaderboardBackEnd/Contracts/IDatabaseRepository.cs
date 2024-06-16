@@ -10,6 +10,8 @@ public interface IDatabaseRepository
     bool DeleteLevel(int ID);
     Level? GetLevel(int ID);
     IEnumerable<Level>? GetAllLevels();
+    bool LevelIDExists(int ID);
+    int LevelsCount();
 
     // Player
     bool InsertPlayer(Player player, out Player newPlayer);
@@ -18,6 +20,10 @@ public interface IDatabaseRepository
     Player? GetPlayer(int ID);
     IEnumerable<Player>? GetAllPlayers();
     IEnumerable<Player>? GetAllPlayers(string phrase); // Search
+    bool PlayerIDExists(int ID);
+    Task<bool> UsernameIsTaken(string username);
+    int PlayersCount();
+
 
     // Score
     bool InsertScore(Score score, out Score newScore);
@@ -27,4 +33,6 @@ public interface IDatabaseRepository
     IEnumerable<Score>? GetAllScores();
     IEnumerable<Score>? GetAllScores(int searchID, bool playerOrLevel); // Search by player OR level ID
     IEnumerable<Score>? GetAllScores(int playerID, int levelID); // Search by player AND level ID
+    bool ScoreIDExists(int ID);
+    int ScoresCount();
 }

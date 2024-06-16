@@ -25,6 +25,6 @@ public interface IDatabaseRepository
     bool DeleteScore(int ID);
     Score? GetScore(int ID);
     IEnumerable<Score> GetAllScores();
-    IEnumerable<Score> GetAllScores(int searchID, bool playerOrLevel); // Search by player OR level ID
-    IEnumerable<Score> GetAllScores(int playerID, int levelID); // Search by player AND level ID
+    IEnumerable<Score>? GetAllScores(int searchID, bool playerOrLevel); // Search by player OR level ID
+    IEnumerable<Score>? GetAllScores(int playerID, int levelID); // Search by player AND level ID
 }

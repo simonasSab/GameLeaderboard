@@ -71,7 +71,9 @@ public class DatabaseRepository : IDatabaseRepository
     }
     public Level? GetLevel(int ID)
     {
-        return _dbContext.Levels.Find(ID);
+        if (LevelIDExists(ID))
+            return _dbContext.Levels.Find(ID);
+        return null;
     }
     public IEnumerable<Level> GetAllLevels()
     {
@@ -79,7 +81,15 @@ public class DatabaseRepository : IDatabaseRepository
     }
     public bool LevelIDExists(int ID)
     {
-        return _dbContext.Levels.Any(x => x.ID == ID);
+        if (_dbContext.Levels.Any(x => x.ID == ID))
+        {
+            return true;
+        }
+        else
+        {
+            Log.Information($"ID: {ID} does not exist in database");
+            return false;
+        }
     }
 
     // Player
@@ -135,7 +145,9 @@ public class DatabaseRepository : IDatabaseRepository
     }
     public Player? GetPlayer(int ID)
     {
-        return _dbContext.Players.Find(ID);
+        if (PlayerIDExists(ID))
+            return _dbContext.Players.Find(ID);
+        return null;
     }
     public IEnumerable<Player> GetAllPlayers()
     {
@@ -148,7 +160,15 @@ public class DatabaseRepository : IDatabaseRepository
     }
     public bool PlayerIDExists(int ID)
     {
-        return _dbContext.Players.Any(x => x.ID == ID);
+        if (_dbContext.Players.Any(x => x.ID == ID))
+        {
+            return true;
+        }
+        else
+        {
+            Log.Information($"ID: {ID} does not exist in database");
+            return false;
+        }
     }
 
     // Score
@@ -204,25 +224,38 @@ public class DatabaseRepository : IDatabaseRepository
     }
     public Score? GetScore(int ID)
     {
-        return _dbContext.Scores.Find(ID);
+        if (ScoreIDExists(ID))
+            return _dbContext.Scores.Find(ID);
+        return null;
     }
     public IEnumerable<Score> GetAllScores()
     {
         return _dbContext.Scores.ToList();
     }
-    public IEnumerable<Score> GetAllScores(int searchID, bool playerOrLevel) // Search by player OR level ID
+    public IEnumerable<Score>? GetAllScores(int searchID, bool playerOrLevel) // Search by player OR level ID
     {
-        if (playerOrLevel)
+        if (playerOrLevel && PlayerIDExists(searchID))
             return _dbContext.Scores.Where(x => x.PlayerID == searchID).ToList();
-        else
+        else if (!playerOrLevel && LevelIDExists(searchID))
             return _dbContext.Scores.Where(x => x.LevelID == searchID).ToList();
+        return null;
     }
-    public IEnumerable<Score> GetAllScores(int playerID, int levelID) // Search by player AND level ID
+    public IEnumerable<Score>? GetAllScores(int playerID, int levelID) // Search by player AND level ID
     {
-        return _dbContext.Scores.Where(x => x.PlayerID == playerID || x.LevelID == levelID).ToList();
+        if (PlayerIDExists(playerID) && LevelIDExists(levelID))
+            return _dbContext.Scores.Where(x => x.PlayerID == playerID || x.LevelID == levelID).ToList();
+        return null;
     }
     public bool ScoreIDExists(int ID)
     {
-        return _dbContext.Scores.Any(x => x.ID == ID);
+        if (_dbContext.Scores.Any(x => x.ID == ID))
+        {
+            return true;
+        }
+        else
+        {
+            Log.Information($"ID: {ID} does not exist in database");
+            return false;
+        }
     }
 }

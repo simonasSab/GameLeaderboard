@@ -71,6 +71,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _players.InsertManyAsync(players);
+            Log.Information($"Inserted {players.Count()} items into cache");
         }
         catch (MongoWriteException e)
         {
@@ -82,6 +83,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _levels.InsertManyAsync(levels);
+            Log.Information($"Inserted {levels.Count()} items into cache");
         }
         catch (MongoWriteException e)
         {
@@ -93,6 +95,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _scores.InsertManyAsync(scores);
+            Log.Information($"Inserted {scores.Count()} items into cache");
         }
         catch (MongoWriteException e)
         {
@@ -106,6 +109,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _levels.InsertOneAsync(level);
+            Log.Information($"Inserted into cache");
         }
         catch (MongoWriteException e)
         {
@@ -117,6 +121,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _levels.UpdateOneAsync(Builders<Level>.Filter.Eq(x => x.MongoID, level.MongoID), Builders<Level>.Update.Set(x => x, level));
+            Log.Information($"Updated in cache");
         }
         catch (MongoWriteException e)
         {
@@ -125,26 +130,34 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task DeleteLevelAsync(int ID)
     {
-        try
+        if (await LevelIDExists(ID))
         {
-            await _levels.DeleteOneAsync(Builders<Level>.Filter.Eq(x => x.ID, ID));
-        }
-        catch (MongoException e)
-        {
-            Log.Error($"Deletion from MongoDB failed ({e}).");
+            try
+            {
+                await _levels.DeleteOneAsync(Builders<Level>.Filter.Eq(x => x.ID, ID));
+                Log.Information($"Deleted from cache");
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Deletion from MongoDB failed ({e}).");
+            }
         }
     }
     public async Task<Level?> GetLevelAsync(int ID)
     {
-        try
+        if (await LevelIDExists(ID))
         {
-            return await _levels.Find(x => x.ID == ID).FirstAsync();
+            try
+            {
+                return await _levels.Find(x => x.ID == ID).FirstAsync();
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                return null;
+            }
         }
-        catch (MongoException e)
-        {
-            Log.Error($"Single retrieval from MongoDB failed ({e}).");
-            return null;
-        }
+        return null;
     }
     public async Task<IEnumerable<Level>?> GetAllLevelsAsync()
     {
@@ -162,6 +175,7 @@ public class MongoDBRepository : IMongoDBRepository
     {
         if (await _levels.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
             return true;
+        Log.Information($"ID: {ID} does not exist in cache.");
         return false;
     }
 
@@ -172,6 +186,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _players.InsertOneAsync(player);
+            Log.Information($"Inserted into cache");
         }
         catch (MongoWriteException e)
         {
@@ -183,6 +198,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _players.UpdateOneAsync(Builders<Player>.Filter.Eq(x => x.MongoID, player.MongoID), Builders<Player>.Update.Set(x => x, player));
+            Log.Information($"Updated in cache");
         }
         catch (MongoWriteException e)
         {
@@ -191,26 +207,34 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task DeletePlayerAsync(int ID)
     {
-        try
+        if (await PlayerIDExists(ID))
         {
-            await _players.DeleteOneAsync(Builders<Player>.Filter.Eq(x => x.ID, ID));
-        }
-        catch (MongoException e)
-        {
-            Log.Error($"Deletion from MongoDB failed ({e}).");
+            try
+            {
+                await _players.DeleteOneAsync(Builders<Player>.Filter.Eq(x => x.ID, ID));
+                Log.Information($"Deleted from cache");
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Deletion from MongoDB failed ({e}).");
+            }
         }
     }
     public async Task<Player?> GetPlayerAsync(int ID)
     {
-        try
+        if (await PlayerIDExists(ID))
         {
-            return await _players.Find(x => x.ID == ID).FirstAsync();
+            try
+            {
+                return await _players.Find(x => x.ID == ID).FirstAsync();
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                return null;
+            }
         }
-        catch (MongoException e)
-        {
-            Log.Error($"Single retrieval from MongoDB failed ({e}).");
-            return null;
-        }
+        return null;
     }
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync()
     {
@@ -244,6 +268,7 @@ public class MongoDBRepository : IMongoDBRepository
     {
         if (await _players.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
             return true;
+        Log.Information($"ID: {ID} does not exist in cache.");
         return false;
     }
 
@@ -254,6 +279,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _scores.InsertOneAsync(score);
+            Log.Information($"Inserted into cache");
         }
         catch (MongoWriteException e)
         {
@@ -265,6 +291,7 @@ public class MongoDBRepository : IMongoDBRepository
         try
         {
             await _scores.UpdateOneAsync(Builders<Score>.Filter.Eq(x => x.MongoID, score.MongoID), Builders<Score>.Update.Set(x => x, score));
+            Log.Information($"Updated in cache");
         }
         catch (MongoWriteException e)
         {
@@ -273,26 +300,34 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task DeleteScoreAsync(int ID)
     {
-        try
+        if (await ScoreIDExists(ID))
         {
-            await _scores.DeleteOneAsync(Builders<Score>.Filter.Eq(x => x.ID, ID));
-        }
-        catch (MongoException e)
-        {
-            Log.Error($"Deletion from MongoDB failed ({e}).");
+            try
+            {
+                await _scores.DeleteOneAsync(Builders<Score>.Filter.Eq(x => x.ID, ID));
+                Log.Information($"Deleted from cache");
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Deletion from MongoDB failed ({e}).");
+            }
         }
     }
     public async Task<Score?> GetScoreAsync(int ID)
     {
-        try
+        if (await ScoreIDExists(ID))
         {
-            return await _scores.Find(x => x.ID == ID).FirstAsync();
+            try
+            {
+                return await _scores.Find(x => x.ID == ID).FirstAsync();
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Single retrieval from MongoDB failed ({e}).");
+                return null;
+            }
         }
-        catch (MongoException e)
-        {
-            Log.Error($"Single retrieval from MongoDB failed ({e}).");
-            return null;
-        }
+        return null;
     }
     public async Task<IEnumerable<Score>?> GetAllScoresAsync()
     {
@@ -307,19 +342,20 @@ public class MongoDBRepository : IMongoDBRepository
         }
     }
     public async Task<IEnumerable<Score>?> GetAllScoresAsync(int searchID, bool playerOrLevel) // Search by player OR level ID
-    {      
+    {
         try
         {
-            if (playerOrLevel)
+            if (playerOrLevel && await PlayerIDExists(searchID))
             {
                 Log.Information($"Trying to find Scores by Player ID: {searchID}...");
                 return await _scores.Find(x => x.PlayerID == searchID).SortBy(x => x.LevelID).ThenBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
             }
-            else
+            else if (!playerOrLevel && await LevelIDExists(searchID))
             {
                 Log.Information($"Trying to find Scores by Level ID: {searchID}...");
                 return await _scores.Find(x => x.LevelID == searchID).SortBy(x => x.PlayerID).ThenBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
             }
+            return null;
         }
         catch (MongoException e)
         {
@@ -329,21 +365,26 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task<IEnumerable<Score>?> GetAllScoresAsync(int playerID, int levelID) // Search by player AND level ID
     {
-        try
+        if (await PlayerIDExists(playerID) && await LevelIDExists(levelID))
         {
-            Log.Information($"Trying to find Scores by Player ID: {playerID} and Level ID: {levelID}...");
-            return await _scores.Find(x => x.PlayerID == playerID && x.LevelID == levelID).SortBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+            try
+            {
+                Log.Information($"Trying to find Scores by Player ID: {playerID} and Level ID: {levelID}...");
+                return await _scores.Find(x => x.PlayerID == playerID && x.LevelID == levelID).SortBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+            }
+            catch (MongoException e)
+            {
+                Log.Error($"Search in MongoDB failed ({e}).");
+                return null;
+            }
         }
-        catch (MongoException e)
-        {
-            Log.Error($"Search in MongoDB failed ({e}).");
-            return null;
-        }
+        return null;
     }
     public async Task<bool> ScoreIDExists(int ID)
     {
         if (await _scores.Find(x => x.ID == ID).Limit(1).FirstOrDefaultAsync() != null)
             return true;
+        Log.Information($"ID: {ID} does not exist in cache.");
         return false;
     }
 }

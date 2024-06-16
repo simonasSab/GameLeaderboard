@@ -9,8 +9,7 @@ using MongoDB.Driver;
 using System.Net;
 using System.Linq;
 using Serilog;
-using System.Numerics;
-using static System.Formats.Asn1.AsnWriter;
+using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardBackEnd.Services;
 
@@ -47,6 +46,8 @@ public class LeaderboardService : ILeaderboardService
         }
     }
 
+    // Random  generation
+
     // Level
     public async Task<bool> InsertLevelAsync(Level level)
     {
@@ -62,20 +63,14 @@ public class LeaderboardService : ILeaderboardService
     public async Task<Level?> GetLevelAsync(int ID)
     {
         Level? level = await _cache.GetLevelAsync(ID);
-        if (level != null)
-        {
-            return level;
-        }
-        else
+        if (level == null)
         {
             level = _database.GetLevel(ID);
             if (level != null)
-            {
                 await _cache.InsertLevelAsync(level);
-                return level;
-            }
-            return null;
+            return level;
         }
+        return level;
     }
     public async Task<bool> UpdateLevelAsync(Level level)
     {
@@ -101,11 +96,25 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<IEnumerable<Level>?> GetAllLevelsAsync()
     {
-        throw new NotImplementedException();
-    }
-    public async Task<IEnumerable<Level>?> GetAllLevelsAsync(string phrase) // Search
-    {
-        throw new NotImplementedException();
+        IEnumerable<Level>? cacheLevels = await _cache.GetAllLevelsAsync();
+        if (cacheLevels == null)
+        {
+            Log.Information($"Cache is empty, synchronizing...\n");
+        }
+        else
+        {
+            Log.Information($"Successfully retrieved {cacheLevels.Count()} levels from cache\n");
+            return cacheLevels;
+        }
+
+        IEnumerable<Level>? levels = _database.GetAllLevels();
+        if (levels == null)
+        {
+            Log.Information("There are no levels in database\n");
+            return null;
+        }
+        await _cache.ImportLevelsAsync(levels);
+        return levels;
     }
     public async Task<bool> LevelIDExistsAsync(int ID)
     {
@@ -127,20 +136,14 @@ public class LeaderboardService : ILeaderboardService
     public async Task<Player?> GetPlayerAsync(int ID)
     {
         Player? player = await _cache.GetPlayerAsync(ID);
-        if (player != null)
-        {
-            return player;
-        }
-        else
+        if (player == null)
         {
             player = _database.GetPlayer(ID);
             if (player != null)
-            {
                 await _cache.InsertPlayerAsync(player);
-                return player;
-            }
-            return null;
+            return player;
         }
+        return player;
     }
     public async Task<bool> UpdatePlayerAsync(Player player)
     {
@@ -166,15 +169,44 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync()
     {
-        throw new NotImplementedException();
+        IEnumerable<Player>? cachePlayers = await _cache.GetAllPlayersAsync();
+        if (cachePlayers == null)
+        {
+            Log.Information($"Cache is empty, synchronizing...\n");
+        }
+        else
+        {
+            Log.Information($"Successfully retrieved {cachePlayers.Count()} players from cache\n");
+            return cachePlayers;
+        }
+
+        IEnumerable<Player>? players = _database.GetAllPlayers();
+        if (players == null)
+        {
+            Log.Information("There are no players in database\n");
+            return null;
+        }
+        await _cache.ImportPlayersAsync(players);
+        return players;
     }
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync(string phrase) // Search
     {
-        throw new NotImplementedException();
-    }
-    public async Task<bool> PlayerIDExistsAsync(int ID)
-    {
-        throw new NotImplementedException();
+        IEnumerable<Player>? cachePlayers = await _cache.GetAllPlayersAsync(phrase);
+        if (cachePlayers != null)
+        {
+            Log.Information($"Found {cachePlayers.Count()} players by phrase \"{phrase}\" in cache\n");
+            return cachePlayers;
+        }
+        else
+        {
+            Log.Information("Nothing found in cache, trying database...\n");
+        }
+
+        IEnumerable<Player>? players = _database.GetAllPlayers(phrase);
+        if (players != null)
+            return players;
+        Log.Information($"No players found by phrase \"{phrase}\" in database\n");
+        return null;
     }
 
     // Score
@@ -192,20 +224,14 @@ public class LeaderboardService : ILeaderboardService
     public async Task<Score?> GetScoreAsync(int ID)
     {
         Score? score = await _cache.GetScoreAsync(ID);
-        if (score != null)
-        {
-            return score;
-        }
-        else
+        if (score == null)
         {
             score = _database.GetScore(ID);
             if (score != null)
-            {
                 await _cache.InsertScoreAsync(score);
-                return score;
-            }
-            return null;
+            return score;
         }
+        return score;
     }
     public async Task<bool> UpdateScoreAsync(Score score)
     {
@@ -231,14 +257,60 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<IEnumerable<Score>?> GetAllScoresAsync()
     {
-        throw new NotImplementedException();
+        IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync();
+        if (cacheScores == null)
+        {
+            Log.Information($"Cache is empty, synchronizing...\n");
+        }
+        else
+        {
+            Log.Information($"Successfully retrieved {cacheScores.Count()} scores from cache\n");
+            return cacheScores;
+        }
+
+        IEnumerable<Score>? scores = _database.GetAllScores();
+        if (scores == null)
+        {
+            Log.Information("There are no scores in database\n");
+            return null;
+        }
+        await _cache.ImportScoresAsync(scores);
+        return scores;
     }
-    public async Task<IEnumerable<Score>?> GetAllScoresAsync(string phrase) // Search
+    public async Task<IEnumerable<Score>?> GetAllScoresAsync(int searchID, bool playerOrLevel) // Search by player OR level ID
     {
-        throw new NotImplementedException();
+        IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync(searchID, playerOrLevel);
+        if (cacheScores == null)
+        {
+            Log.Information($"Nothing found in cache, trying database...\n");
+        }
+        else
+        {
+            Log.Information($"Found {cacheScores.Count()} scores from cache\n");
+            return cacheScores;
+        }
+
+        IEnumerable<Score>? scores = _database.GetAllScores(searchID, playerOrLevel);
+        if (scores == null)
+            Log.Information("No scores found in database\n");
+        return scores;
     }
-    public async Task<bool> ScoreIDExistsAsync(int ID)
+    public async Task<IEnumerable<Score>?> GetAllScoresAsync(int playerID, int levelID) // Search by player AND level ID
     {
-        throw new NotImplementedException();
+        IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync(playerID, levelID);
+        if (cacheScores == null)
+        {
+            Log.Information($"Nothing found in cache, trying database...\n");
+        }
+        else
+        {
+            Log.Information($"Found {cacheScores.Count()} scores from cache\n");
+            return cacheScores;
+        }
+
+        IEnumerable<Score>? scores = _database.GetAllScores(playerID, levelID);
+        if (scores == null)
+            Log.Information("No scores found in database\n");
+        return scores;
     }
 }

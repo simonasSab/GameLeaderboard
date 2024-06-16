@@ -13,8 +13,6 @@ public interface ILeaderboardService
     Task<bool> UpdateLevelAsync(Level level);
     Task<bool> DeleteLevelAsync(int ID);
     Task<IEnumerable<Level>?> GetAllLevelsAsync();
-    Task<IEnumerable<Level>?> GetAllLevelsAsync(string phrase); // Search
-    Task<bool> LevelIDExistsAsync(int ID);
 
     // Player
     Task<bool> InsertPlayerAsync(Player player);
@@ -23,14 +21,13 @@ public interface ILeaderboardService
     Task<bool> DeletePlayerAsync(int ID);
     Task<IEnumerable<Player>?> GetAllPlayersAsync();
     Task<IEnumerable<Player>?> GetAllPlayersAsync(string phrase); // Search
-    Task<bool> PlayerIDExistsAsync(int ID);
 
     // Score
     Task<bool> InsertScoreAsync(Score score);
     Task<Score?> GetScoreAsync(int ID);
     Task<bool> UpdateScoreAsync(Score score);
-    Task<bool> DeleteScoreAsync(int ID);
+    Task<bool> DeleteScoreAsync(int ID );
     Task<IEnumerable<Score>?> GetAllScoresAsync();
-    Task<IEnumerable<Score>?> GetAllScoresAsync(string phrase); // Search
-    Task<bool> ScoreIDExistsAsync(int ID);
+    Task<IEnumerable<Score>?> GetAllScoresAsync(int searchID, bool playerOrLevel); // Search by player OR level ID
+    Task<IEnumerable<Score>?> GetAllScoresAsync(int playerID, int levelID); // Search by player AND level ID
 }

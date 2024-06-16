@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Services;
+using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardAPI.Controllers;
 

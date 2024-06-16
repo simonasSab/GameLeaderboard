@@ -57,7 +57,7 @@ public class DatabaseRepository : IDatabaseRepository
         Level? item = GetLevel(ID);
         if (item == null)
         {
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
             return false;
         }
         _dbContext.Levels.Remove(item);
@@ -66,7 +66,7 @@ public class DatabaseRepository : IDatabaseRepository
         if (!_dbContext.Scores.Any(x => x.ID == ID))
             return true;
         else
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
         return false;
     }
     public Level? GetLevel(int ID)
@@ -75,9 +75,11 @@ public class DatabaseRepository : IDatabaseRepository
             return _dbContext.Levels.Find(ID);
         return null;
     }
-    public IEnumerable<Level> GetAllLevels()
+    public IEnumerable<Level>? GetAllLevels()
     {
-        return _dbContext.Levels.ToList();
+        if (_dbContext.Levels.Any())
+            return _dbContext.Levels.ToList();
+        return null;
     }
     public bool LevelIDExists(int ID)
     {
@@ -131,7 +133,7 @@ public class DatabaseRepository : IDatabaseRepository
         Player? item = GetPlayer(ID);
         if (item == null)
         {
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
             return false;
         }
         _dbContext.Players.Remove(item);
@@ -140,7 +142,7 @@ public class DatabaseRepository : IDatabaseRepository
         if (!_dbContext.Players.Any(x => x.ID == ID))
             return true;
         else
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
         return false;
     }
     public Player? GetPlayer(int ID)
@@ -149,14 +151,20 @@ public class DatabaseRepository : IDatabaseRepository
             return _dbContext.Players.Find(ID);
         return null;
     }
-    public IEnumerable<Player> GetAllPlayers()
+    public IEnumerable<Player>? GetAllPlayers()
     {
-        return _dbContext.Players.ToList();
+        if (_dbContext.Players.Any())
+            return _dbContext.Players.ToList();
+        return null;
     }
-    public IEnumerable<Player> GetAllPlayers(string phrase) // Search
+    public IEnumerable<Player>? GetAllPlayers(string phrase) // Search
     {
-        Regex rx = new("*phrase*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-        return _dbContext.Players.Where(x => rx.IsMatch(Regex.Replace(x.Username, @"\s+", ""))).ToList();
+        if (_dbContext.Players.Any())
+        {
+            Regex rx = new("*phrase*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            return _dbContext.Players.Where(x => rx.IsMatch(Regex.Replace(x.Username, @"\s+", ""))).ToList();
+        }
+        return null;
     }
     public bool PlayerIDExists(int ID)
     {
@@ -210,7 +218,7 @@ public class DatabaseRepository : IDatabaseRepository
         Score? item = GetScore(ID);
         if (item == null)
         {
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
             return false;
         }
         _dbContext.Scores.Remove(item);
@@ -219,7 +227,7 @@ public class DatabaseRepository : IDatabaseRepository
         if (!_dbContext.Scores.Any(x => x.ID == ID))
             return true;
         else
-            Log.Error("ERROR: ID was not deleted from database");
+            Log.Error($"ID: {ID} was not deleted from database");
         return false;
     }
     public Score? GetScore(int ID)
@@ -228,9 +236,11 @@ public class DatabaseRepository : IDatabaseRepository
             return _dbContext.Scores.Find(ID);
         return null;
     }
-    public IEnumerable<Score> GetAllScores()
+    public IEnumerable<Score>? GetAllScores()
     {
-        return _dbContext.Scores.ToList();
+        if (_dbContext.Scores.Any())
+            return _dbContext.Scores.ToList();
+        return null;
     }
     public IEnumerable<Score>? GetAllScores(int searchID, bool playerOrLevel) // Search by player OR level ID
     {

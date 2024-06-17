@@ -11,14 +11,10 @@ public class Level
 {
     [Key]
     public int ID { get; set; }
+    [BsonIgnore]
     public ICollection<Score> Scores { get; set; } // this.ID is FK for Score
 
-    private int _maxScore;
-    public int MaxScore
-    {
-        get { return _maxScore; }
-        set { _maxScore = value; }
-    }
+    public int MaxScore { get; set; }
 
     [NotMapped] [BsonId]
     public ObjectId MongoID { get; set; }

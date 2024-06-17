@@ -6,12 +6,11 @@ public interface ILeaderboardService
 {
     // Cache cleaning
     void ToggleCacheCleaning(int cachePeriod);
-    bool IsCacheCleaningON();
 
     //Random object insertion
-    Task InsertRandomLevelAsync();
-    Task InsertRandomPlayerAsync();
-    Task InsertRandomScoreAsync();
+    Task<bool> InsertRandomLevelAsync();
+    Task<bool> InsertRandomPlayerAsync();
+    Task<bool> InsertRandomScoreAsync();
 
     // Level
     Task<bool> InsertLevelAsync(Level level);

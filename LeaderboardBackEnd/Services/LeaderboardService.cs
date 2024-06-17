@@ -11,7 +11,7 @@ public class LeaderboardService : ILeaderboardService
     private IDatabaseRepository _database { get; set; }
     private IMongoDBRepository _cache { get; set; }
     private ICreationService _creationService { get; set; }
-    private bool CacheCleaningON { get; set; } = false;
+    public bool CacheCleaningON { get; private set; } = false;
 
     public LeaderboardService(IDatabaseRepository databaseRepository, IMongoDBRepository mongoDBRepository, ICreationService creationService)
     {
@@ -21,10 +21,6 @@ public class LeaderboardService : ILeaderboardService
     }
 
     // Cache cleaning
-    public bool IsCacheCleaningON()
-    {
-        return CacheCleaningON;
-    }
     public void ToggleCacheCleaning(int cachePeriod)
     {
         if (!CacheCleaningON)
@@ -42,32 +38,18 @@ public class LeaderboardService : ILeaderboardService
     }
 
     // Random object insertion
-    public async Task InsertRandomLevelAsync()
+    public async Task<bool> InsertRandomLevelAsync()
     {
         Random random = new();
-        Level level = new(random.Next(10, 51));
-
-        _database.InsertLevel(level, out Level newLevel);
-        Log.Information($"New level: {newLevel.ToString()}");
-        await _cache.InsertLevelAsync(newLevel);
+        return await InsertLevelAsync(new(random.Next(10, 51)));
     }
-    public async Task InsertRandomPlayerAsync()
+    public async Task<bool> InsertRandomPlayerAsync()
     {
-        _database.InsertPlayer(await _creationService.CreateRandomPlayerAsync(), out Player newPlayer);
-        Log.Information($"New player: {newPlayer.ToString()}");
-        await _cache.InsertPlayerAsync(newPlayer);
+        return await InsertPlayerAsync(await _creationService.CreateRandomPlayerAsync());
     }
-    public async Task InsertRandomScoreAsync()
+    public async Task<bool> InsertRandomScoreAsync()
     {
-        if (_database.InsertScore(await _creationService.CreateRandomScoreAsync(), out Score newScore))
-        {
-            Log.Information($"New score: {newScore.ToString()}");
-            await _cache.InsertScoreAsync(newScore);
-        }
-        else
-        {
-            Log.Error($"New score not inserted");
-        }
+        return await InsertScoreAsync(_creationService.CreateRandomScoreAsync());
     }
 
     // Level
@@ -96,9 +78,9 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdateLevelAsync(Level level)
     {
-        if (_database.UpdateLevel(level, out Level updatedLevel))
+        if (_database.UpdateLevel(level))
         {
-            Log.Information($"Updated Level: {updatedLevel.ToString()}");
+            Log.Information($"Updated Level: {level.ToString()}");
             await _cache.UpdateLevelAsync(level);
             return true;
         }
@@ -169,9 +151,9 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdatePlayerAsync(Player player)
     {
-        if (_database.UpdatePlayer(player, out Player updatedPlayer))
+        if (_database.UpdatePlayer(player))
         {
-            Log.Information($"Updated Player: {updatedPlayer.ToString()}");
+            Log.Information($"Updated Player: {player.ToString()}");
             await _cache.UpdatePlayerAsync(player);
             return true;
         }
@@ -246,6 +228,14 @@ public class LeaderboardService : ILeaderboardService
         {
             Log.Information($"New score: {newScore.ToString()}");
             await _cache.InsertScoreAsync(newScore);
+
+            // Add newScore.Time to player.TimePlayed
+            Player? player = await GetPlayerAsync(newScore.PlayerID);
+            if (player != null)
+            {
+                player.TimePlayed += newScore.Time;
+                await UpdatePlayerAsync(player);
+            }
             return true;
         }
         Log.Error($"Something went wrong while inserting into database.\n");
@@ -265,9 +255,9 @@ public class LeaderboardService : ILeaderboardService
     }
     public async Task<bool> UpdateScoreAsync(Score score)
     {
-        if (_database.UpdateScore(score, out Score updatedScore))
+        if (_database.UpdateScore(score))
         {
-            Log.Information($"Updated Score: {updatedScore.ToString()}");
+            Log.Information($"Updated Score: {score.ToString()}");
             await _cache.UpdateScoreAsync(score);
             return true;
         }

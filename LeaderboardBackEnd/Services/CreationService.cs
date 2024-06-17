@@ -22,7 +22,7 @@ public class CreationService : ICreationService
         {
             username = $"{Enum.GetName(typeof(RandomUsername), random.Next(91))}_{random.Next(1000):000}";
         }
-        while (!await _database.UsernameIsTaken(username));
+        while (await _database.UsernameIsTaken(username));
 
         // Generate unmemorable password
         string password = $"{(char)random.Next(33, 127)}{(char)random.Next(33, 127)}{(char)random.Next(33, 127)}{(char)random.Next(33, 127)}{random.Next(100):00}" +
@@ -35,7 +35,7 @@ public class CreationService : ICreationService
         return new(username, password, email);
     }
 
-    public async Task<Score> CreateRandomScoreAsync()
+    public Score CreateRandomScoreAsync()
     {
         Random random = new();
 

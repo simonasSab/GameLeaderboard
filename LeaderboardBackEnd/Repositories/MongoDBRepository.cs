@@ -75,7 +75,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
     public async Task ImportLevelsAsync(IEnumerable<Level> levels)
@@ -87,7 +87,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
     public async Task ImportScoresAsync(IEnumerable<Score> scores)
@@ -99,7 +99,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
 
@@ -113,7 +113,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
     public async Task UpdateLevelAsync(Level level)
@@ -125,7 +125,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at cache failed ({e}).");
+            Log.Error($"Update at cache failed ({e.Message}).");
         }
     }
     public async Task DeleteLevelAsync(int ID)
@@ -137,9 +137,9 @@ public class MongoDBRepository : IMongoDBRepository
                 await _levels.DeleteOneAsync(Builders<Level>.Filter.Eq(x => x.ID, ID));
                 Log.Information($"Deleted from cache");
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Deletion from cache failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e.Message}).");
             }
         }
     }
@@ -151,9 +151,9 @@ public class MongoDBRepository : IMongoDBRepository
             {
                 return await _levels.Find(x => x.ID == ID).FirstAsync();
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Single retrieval from cache failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e.Message}).");
                 return null;
             }
         }
@@ -165,9 +165,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _levels.Find(_ => true).ToListAsync();
         }
-        catch (MongoException e)
+        catch (Exception e)
         {
-            Log.Error($"Retrieval from cache failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e.Message}).");
             return null;
         }
     }
@@ -190,7 +190,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
     public async Task UpdatePlayerAsync(Player player)
@@ -202,7 +202,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at cache failed ({e}).");
+            Log.Error($"Update at cache failed ({e.Message}).");
         }
     }
     public async Task DeletePlayerAsync(int ID)
@@ -214,9 +214,9 @@ public class MongoDBRepository : IMongoDBRepository
                 await _players.DeleteOneAsync(Builders<Player>.Filter.Eq(x => x.ID, ID));
                 Log.Information($"Deleted from cache");
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Deletion from cache failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e.Message}).");
             }
         }
     }
@@ -228,9 +228,9 @@ public class MongoDBRepository : IMongoDBRepository
             {
                 return await _players.Find(x => x.ID == ID).FirstAsync();
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Single retrieval from cache failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e.Message}).");
                 return null;
             }
         }
@@ -242,9 +242,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _players.Find(_ => true).ToListAsync();
         }
-        catch (MongoException e)
+        catch (Exception e)
         {
-            Log.Error($"Retrieval from cache failed ({e}).");
+            Log.Error($"Retrieval from cache failed: ({e.Message}).");
             return null;
         }
     }
@@ -258,9 +258,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _players.Find(filter).SortBy(x => x.Username).ToListAsync();
         }
-        catch (MongoException e)
+        catch (Exception e)
         {
-            Log.Error($"Retrieval from cache failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e.Message}).");
             return null;
         }
     }
@@ -283,7 +283,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Insertion into cache failed ({e}).");
+            Log.Error($"Insertion into cache failed ({e.Message}).");
         }
     }
     public async Task UpdateScoreAsync(Score score)
@@ -295,7 +295,7 @@ public class MongoDBRepository : IMongoDBRepository
         }
         catch (MongoWriteException e)
         {
-            Log.Error($"Update at cache failed ({e}).");
+            Log.Error($"Update at cache failed ({e.Message}).");
         }
     }
     public async Task DeleteScoreAsync(int ID)
@@ -307,9 +307,9 @@ public class MongoDBRepository : IMongoDBRepository
                 await _scores.DeleteOneAsync(Builders<Score>.Filter.Eq(x => x.ID, ID));
                 Log.Information($"Deleted from cache");
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Deletion from cache failed ({e}).");
+                Log.Error($"Deletion from cache failed ({e.Message}).");
             }
         }
     }
@@ -321,9 +321,9 @@ public class MongoDBRepository : IMongoDBRepository
             {
                 return await _scores.Find(x => x.ID == ID).FirstAsync();
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Single retrieval from cache failed ({e}).");
+                Log.Error($"Single retrieval from cache failed ({e.Message}).");
                 return null;
             }
         }
@@ -335,9 +335,9 @@ public class MongoDBRepository : IMongoDBRepository
         {
             return await _scores.Find(_ => true).ToListAsync();
         }
-        catch (MongoException e)
+        catch (Exception e)
         {
-            Log.Error($"Retrieval from cache failed ({e}).");
+            Log.Error($"Retrieval from cache failed ({e.Message}).");
             return null;
         }
     }
@@ -357,9 +357,9 @@ public class MongoDBRepository : IMongoDBRepository
             }
             return null;
         }
-        catch (MongoException e)
+        catch (Exception e)
         {
-            Log.Error($"Search in cache failed ({e}).");
+            Log.Error($"Search in cache failed ({e.Message}).");
             return null;
         }
     }
@@ -372,9 +372,9 @@ public class MongoDBRepository : IMongoDBRepository
                 Log.Information($"Trying to find Scores by Player ID: {playerID} and Level ID: {levelID}...");
                 return await _scores.Find(x => x.PlayerID == playerID && x.LevelID == levelID).SortBy(x => x.Points).ThenBy(x => x.Time).ToListAsync();
             }
-            catch (MongoException e)
+            catch (Exception e)
             {
-                Log.Error($"Search in cache failed ({e}).");
+                Log.Error($"Search in cache failed ({e.Message}).");
                 return null;
             }
         }

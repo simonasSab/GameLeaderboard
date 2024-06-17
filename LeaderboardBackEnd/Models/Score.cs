@@ -13,10 +13,12 @@ public class Score
 
     [ForeignKey("Player")]
     public int PlayerID {  get; set; }
+    [BsonIgnore]
     public Player Player { get; set; }
     
     [ForeignKey("Level")]
     public int LevelID { get; set; }
+    [BsonIgnore]
     public Level Level { get; set; }
 
     private int _points;
@@ -33,7 +35,7 @@ public class Score
         set { _time = value; }
     }
 
-    public DateTime CreationDateTime { get; set; }
+    public DateTime CreationDateTime { get; set; } = DateTime.Now;
     
     [NotMapped] [BsonId]
     public ObjectId MongoID { get; set; }
@@ -65,7 +67,7 @@ public class Score
 
     public override string ToString()
     {
-        return $"ID {ID}, PlayerID {PlayerID}, LevelID {LevelID}, {Points} points, time: {Time:mm:ss:fff} ({CreationDateTime})";
+        return $"ID {ID}, PlayerID {PlayerID}, LevelID {LevelID}, {Points} points, time: {Time.Minutes:00}:{Time.Seconds:00}:{Time.Milliseconds:000} ({CreationDateTime})";
     }
 
     public override bool Equals(object? obj)

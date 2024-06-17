@@ -10,10 +10,12 @@ public class Player
 {
     [Key]
     public int ID { get; set; }
+    [BsonIgnore]
     public ICollection<Score> Scores { get; set; } // this.ID is FK for Score
 
     public string Username { get; set; }
 
+    [BsonIgnore]
     private string _password;
     public string Password
     {
@@ -21,6 +23,7 @@ public class Player
         set { _password = value; }
     }
 
+    [BsonIgnore]
     private string _email;
     public string Email
     {
@@ -29,8 +32,7 @@ public class Player
     }
 
     public TimeSpan TimePlayed { get; set; } = TimeSpan.Zero;
-    private DateTime _creationDateTime = DateTime.Now;
-    public DateTime CreationDateTime { get; set; }
+    public DateTime CreationDateTime { get; set; } = DateTime.Now;
     [NotMapped] [BsonId]
     public ObjectId MongoID { get; set; }
 
@@ -51,22 +53,23 @@ public class Player
         Email = email;
         TimePlayed = timePlayed;
         CreationDateTime = creationDateTime;
-        this.MongoID = mongoID;
+        MongoID = mongoID;
     }
 
     public override string ToString()
     {
-        return $"ID {ID}, username {Username}, time played {TimePlayed:hh:mm:ss} since {CreationDateTime}";
+        return $"ID {ID}, username {Username}, time played {TimePlayed.Hours:00}:{TimePlayed.Minutes:00}:{TimePlayed.Seconds:00} since {CreationDateTime}";
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj == null)                        return false;
+        if (obj == null)                            return false;
         Player player = (Player)obj;
-        if (player.ID != this.ID)               return false;
-        if (player.Username != this.Username)   return false;
-        if (player.Password != this.Password)   return false;
-        if (player.Email != this.Email)         return false;
+        if (player.ID != this.ID)                   return false;
+        if (player.Username != this.Username)       return false;
+        if (player.Password != this.Password)       return false;
+        if (player.Email != this.Email)             return false;
+        if (player.TimePlayed != this.TimePlayed)   return false;
 
         return true;
     }

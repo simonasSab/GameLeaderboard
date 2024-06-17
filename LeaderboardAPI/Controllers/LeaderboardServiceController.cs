@@ -29,30 +29,24 @@ public class LeaderboardServiceController : ControllerBase
         _leaderboardService.ToggleCacheCleaning(cachePeriod);
     }
 
-    [HttpGet("IsCacheCleaningON")]
-    public bool IsCacheCleaningON()
-    {
-        return _leaderboardService.IsCacheCleaningON();
-    }
-
     // ------------ Random object insertion ------------
 
-    [HttpPost("InsertRandomLevelAsync")]
-    public async Task InsertRandomLevelAsync()
+    [HttpGet("InsertRandomLevelAsync")]
+    public async Task<bool> InsertRandomLevelAsync()
     {
-        await _leaderboardService.InsertRandomLevelAsync();
+        return await _leaderboardService.InsertRandomLevelAsync();
     }
 
-    [HttpPost("InsertRandomPlayerAsync")]
-    public async Task InsertRandomPlayerAsync()
+    [HttpGet("InsertRandomPlayerAsync")]
+    public async Task<bool> InsertRandomPlayerAsync()
     {
-        await _leaderboardService.InsertRandomPlayerAsync();
+        return await _leaderboardService.InsertRandomPlayerAsync();
     }
 
-    [HttpPost("InsertRandomScoreAsync")]
-    public async Task InsertRandomScoreAsync()
+    [HttpGet("InsertRandomScoreAsync")]
+    public async Task<bool> InsertRandomScoreAsync()
     {
-        await _leaderboardService.InsertRandomScoreAsync();
+        return await _leaderboardService.InsertRandomScoreAsync();
     }
 
     // ------------ Level ------------

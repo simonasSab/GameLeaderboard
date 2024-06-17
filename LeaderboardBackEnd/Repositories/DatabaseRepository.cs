@@ -36,21 +36,15 @@ public class DatabaseRepository : IDatabaseRepository
         _dbContext.SaveChanges();
         return false;
     }
-    public bool UpdateLevel(Level item, out Level updatedItem)
+    public bool UpdateLevel(Level item)
     {
-        // Keep updated object as updatedItem
-        updatedItem = item;
-        if (item == null)
-            return false;
-        // Find current object from DB and keep as item
-        item = _dbContext.Levels.Find(item.ID);
         // Update value in DB
-        _dbContext.Update(updatedItem);
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
+            return false;
         _dbContext.SaveChanges();
-        // Check if updatedItem (returned from DB) was updated
-        if (!updatedItem.Equals(item))
-            return true;
-        return false;
+        return true;
     }
     public bool DeleteLevel(int ID)
     {
@@ -116,21 +110,15 @@ public class DatabaseRepository : IDatabaseRepository
         _dbContext.SaveChanges();
         return false;
     }
-    public bool UpdatePlayer(Player item, out Player updatedItem)
+    public bool UpdatePlayer(Player item)
     {
-        // Keep updated object as updatedItem
-        updatedItem = item;
-        if (item == null)
-            return false;
-        // Find current object from DB and keep as item
-        item = _dbContext.Players.Find(item.ID);
         // Update value in DB
-        _dbContext.Update(updatedItem);
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
+            return false;
         _dbContext.SaveChanges();
-        // Check if updatedItem (returned from DB) was updated
-        if (!updatedItem.Equals(item))
-            return true;
-        return false;
+        return true;
     }
     public bool DeletePlayer(int ID)
     {
@@ -165,7 +153,7 @@ public class DatabaseRepository : IDatabaseRepository
     {
         if (_dbContext.Players.Any())
         {
-            Regex rx = new("*phrase*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            Regex rx = new(".*phrase.*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
             return _dbContext.Players.Where(x => rx.IsMatch(Regex.Replace(x.Username, @"\s+", ""))).ToList();
         }
         return null;
@@ -209,21 +197,15 @@ public class DatabaseRepository : IDatabaseRepository
         _dbContext.SaveChanges();
         return false;
     }
-    public bool UpdateScore(Score item, out Score updatedItem)
+    public bool UpdateScore(Score item)
     {
-        // Keep updated object as updatedItem
-        updatedItem = item;
-        if (item == null)
-            return false;
-        // Find current object from DB and keep as item
-        item = _dbContext.Scores.Find(item.ID);
         // Update value in DB
-        _dbContext.Update(updatedItem);
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
+            return false;
         _dbContext.SaveChanges();
-        // Check if updatedItem (returned from DB) was updated
-        if (!updatedItem.Equals(item))
-            return true;
-        return false;
+        return true;
     }
     public bool DeleteScore(int ID)
     {

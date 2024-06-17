@@ -6,7 +6,7 @@ public interface IDatabaseRepository
 {
     // Level
     bool InsertLevel(Level level, out Level newLevel);
-    bool UpdateLevel(Level level, out Level updatedLevel);
+    bool UpdateLevel(Level level);
     bool DeleteLevel(int ID);
     Level? GetLevel(int ID);
     IEnumerable<Level>? GetAllLevels();
@@ -15,7 +15,7 @@ public interface IDatabaseRepository
 
     // Player
     bool InsertPlayer(Player player, out Player newPlayer);
-    bool UpdatePlayer(Player player, out Player updatedPlayer);
+    bool UpdatePlayer(Player player);
     bool DeletePlayer(int ID);
     Player? GetPlayer(int ID);
     IEnumerable<Player>? GetAllPlayers();
@@ -27,7 +27,7 @@ public interface IDatabaseRepository
 
     // Score
     bool InsertScore(Score score, out Score newScore);
-    bool UpdateScore(Score score, out Score updatedScore);
+    bool UpdateScore(Score score);
     bool DeleteScore(int ID);
     Score? GetScore(int ID);
     IEnumerable<Score>? GetAllScores();

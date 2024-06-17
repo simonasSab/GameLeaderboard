@@ -22,7 +22,7 @@ builder.Services.AddSwaggerGen();
 // Create Serilog configuration
 var log = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("logs/log_backend.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/log_api.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 Log.Logger = log;
 

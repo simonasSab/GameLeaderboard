@@ -2,9 +2,10 @@
 using LeaderboardBackEnd.Databases;
 using LeaderboardBackEnd.Models;
 using System.Data;
-using System.Text.RegularExpressions;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace LeaderboardBackEnd.Repositories;
 
@@ -19,22 +20,15 @@ public class DatabaseRepository : IDatabaseRepository
     }
 
     // Level
-    public bool InsertLevel(Level item, out Level newItem)
+    public bool InsertLevel(Level item)
     {
-        newItem = item;
-        if (item == null)
+        // Insert value into DB
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
             return false;
-
-        _dbContext.Add(item);
         _dbContext.SaveChanges();
-        if (item.ID > 0)
-        {
-            newItem = item;
-            return true;
-        }
-        _dbContext.Remove(item);
-        _dbContext.SaveChanges();
-        return false;
+        return true;
     }
     public bool UpdateLevel(Level item)
     {
@@ -93,22 +87,15 @@ public class DatabaseRepository : IDatabaseRepository
     }
 
     // Player
-    public bool InsertPlayer(Player item, out Player newItem)
+    public bool InsertPlayer(Player item)
     {
-        newItem = item;
-        if (item == null)
+        // Insert value into DB
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
             return false;
-
-        _dbContext.Add(item);
         _dbContext.SaveChanges();
-        if (item.ID > 0)
-        {
-            newItem = item;
-            return true;
-        }
-        _dbContext.Remove(item);
-        _dbContext.SaveChanges();
-        return false;
+        return true;
     }
     public bool UpdatePlayer(Player item)
     {
@@ -153,8 +140,13 @@ public class DatabaseRepository : IDatabaseRepository
     {
         if (_dbContext.Players.Any())
         {
-            Regex rx = new(".*phrase.*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-            return _dbContext.Players.Where(x => rx.IsMatch(Regex.Replace(x.Username, @"\s+", ""))).ToList();
+            //string pattern = @"\s+";
+            //string replacement = "";
+
+            IEnumerable<Player>? players = _dbContext.Players.ToList();
+
+            Regex rx = new($".*{phrase}.*", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+            return players.Where(x => rx.IsMatch(Regex.Replace(x.Username, @"\s+", ""))).ToList();
         }
         return null;
     }
@@ -180,22 +172,15 @@ public class DatabaseRepository : IDatabaseRepository
     }
 
     // Score
-    public bool InsertScore(Score item, out Score newItem)
+    public bool InsertScore(Score item)
     {
-        newItem = item;
-        if (item == null)
+        // Insert value into DB
+        _dbContext.Update(item);
+        // Check if item was updated
+        if (_dbContext.Entry(item).State == EntityState.Unchanged)
             return false;
-
-        _dbContext.Add(item);
         _dbContext.SaveChanges();
-        if (item.ID > 0)
-        {
-            newItem = item;
-            return true;
-        }
-        _dbContext.Remove(item);
-        _dbContext.SaveChanges();
-        return false;
+        return true;
     }
     public bool UpdateScore(Score item)
     {
@@ -247,7 +232,7 @@ public class DatabaseRepository : IDatabaseRepository
     public IEnumerable<Score>? GetAllScores(int playerID, int levelID) // Search by player AND level ID
     {
         if (PlayerIDExists(playerID) && LevelIDExists(levelID))
-            return _dbContext.Scores.Where(x => x.PlayerID == playerID || x.LevelID == levelID).ToList();
+            return _dbContext.Scores.Where(x => x.PlayerID == playerID && x.LevelID == levelID).ToList();
         return null;
     }
     public bool ScoreIDExists(int ID)

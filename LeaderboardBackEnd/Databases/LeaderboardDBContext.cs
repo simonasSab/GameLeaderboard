@@ -1,6 +1,5 @@
 ﻿using LeaderboardBackEnd.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardBackEnd.Databases;
 

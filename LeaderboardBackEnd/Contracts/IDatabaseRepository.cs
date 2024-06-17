@@ -5,7 +5,7 @@ namespace LeaderboardBackEnd.Contracts;
 public interface IDatabaseRepository
 {
     // Level
-    bool InsertLevel(Level level, out Level newLevel);
+    bool InsertLevel(Level level);
     bool UpdateLevel(Level level);
     bool DeleteLevel(int ID);
     Level? GetLevel(int ID);
@@ -14,7 +14,7 @@ public interface IDatabaseRepository
     int LevelsCount();
 
     // Player
-    bool InsertPlayer(Player player, out Player newPlayer);
+    bool InsertPlayer(Player player);
     bool UpdatePlayer(Player player);
     bool DeletePlayer(int ID);
     Player? GetPlayer(int ID);
@@ -26,7 +26,7 @@ public interface IDatabaseRepository
 
 
     // Score
-    bool InsertScore(Score score, out Score newScore);
+    bool InsertScore(Score score);
     bool UpdateScore(Score score);
     bool DeleteScore(int ID);
     Score? GetScore(int ID);

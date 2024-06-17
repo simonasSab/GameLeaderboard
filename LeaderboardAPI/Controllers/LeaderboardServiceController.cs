@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Models;
-using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Sinks.SystemConsole;
-using Serilog.Sinks.File;
 
 namespace LeaderboardAPI.Controllers;
 

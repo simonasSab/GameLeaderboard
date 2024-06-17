@@ -3,10 +3,7 @@ using MongoDB.Bson;
 using Serilog;
 using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Repositories;
-using LeaderboardBackEnd.Databases;
-using LeaderboardBackEnd.Models;
 using LeaderboardBackEnd.Services;
-using Microsoft.Extensions.Hosting;
 
 namespace LeaderboardBackEnd;
 

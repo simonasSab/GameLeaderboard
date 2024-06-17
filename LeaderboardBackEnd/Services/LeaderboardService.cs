@@ -1,6 +1,5 @@
 ﻿using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Models;
-using Microsoft.Identity.Client.Cache;
 using MongoDB.Driver;
 using Serilog;
 
@@ -55,10 +54,10 @@ public class LeaderboardService : ILeaderboardService
     // Level
     public async Task<bool> InsertLevelAsync(Level level)
     {
-        if (_database.InsertLevel(level, out Level newLevel))
+        if (_database.InsertLevel(level))
         {
-            Log.Information($"New level: {newLevel.ToString()}");
-            await _cache.InsertLevelAsync(newLevel);
+            Log.Information($"New level: {level.ToString()}");
+            await _cache.InsertLevelAsync(level);
             return true;
         }
         Log.Error($"Something went wrong while inserting into database.\n");
@@ -128,10 +127,10 @@ public class LeaderboardService : ILeaderboardService
     // Player
     public async Task<bool> InsertPlayerAsync(Player player)
     {
-        if (_database.InsertPlayer(player, out Player newPlayer))
+        if (_database.InsertPlayer(player))
         {
-            Log.Information($"New player: {newPlayer.ToString()}");
-            await _cache.InsertPlayerAsync(newPlayer);
+            Log.Information($"New player: {player.ToString()}");
+            await _cache.InsertPlayerAsync(player);
             return true;
         }
         Log.Error($"Something went wrong while inserting into database.\n");
@@ -224,16 +223,16 @@ public class LeaderboardService : ILeaderboardService
     // Score
     public async Task<bool> InsertScoreAsync(Score score)
     {
-        if (_database.InsertScore(score, out Score newScore))
+        if (_database.InsertScore(score))
         {
-            Log.Information($"New score: {newScore.ToString()}");
-            await _cache.InsertScoreAsync(newScore);
+            Log.Information($"New score: {score.ToString()}");
+            await _cache.InsertScoreAsync(score);
 
             // Add newScore.Time to player.TimePlayed
-            Player? player = await GetPlayerAsync(newScore.PlayerID);
+            Player? player = await GetPlayerAsync(score.PlayerID);
             if (player != null)
             {
-                player.TimePlayed += newScore.Time;
+                player.TimePlayed += score.Time;
                 await UpdatePlayerAsync(player);
             }
             return true;

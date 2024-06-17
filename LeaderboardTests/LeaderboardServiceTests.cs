@@ -58,7 +58,7 @@ public class LeaderboardServiceTests
         // Arrange
         var score = new Score();
         _creationServiceMock.Setup(cs => cs.CreateRandomScoreAsync()).Returns(score);
-        _databaseMock.Setup(db => db.InsertScore(score, out It.Ref<Score>.IsAny))
+        _databaseMock.Setup(db => db.InsertScore(score))
                      .Returns(false)
                      .Verifiable();
 
@@ -66,7 +66,7 @@ public class LeaderboardServiceTests
         await _service.InsertRandomScoreAsync();
 
         // Assert
-        _databaseMock.Verify(db => db.InsertScore(It.IsAny<Score>(), out It.Ref<Score>.IsAny), Times.Once);
+        _databaseMock.Verify(db => db.InsertScore(It.IsAny<Score>()), Times.Once);
         _cacheMock.Verify(cache => cache.InsertScoreAsync(It.IsAny<Score>()), Times.Never);
     }
 
@@ -75,14 +75,14 @@ public class LeaderboardServiceTests
     {
         // Arrange
         var level = new Level(1);
-        _databaseMock.Setup(db => db.InsertLevel(level, out It.Ref<Level>.IsAny)).Returns(false).Verifiable();
+        _databaseMock.Setup(db => db.InsertLevel(level)).Returns(false).Verifiable();
 
         // Act
         var result = await _service.InsertLevelAsync(level);
 
         // Assert
         Assert.False(result);
-        _databaseMock.Verify(db => db.InsertLevel(level, out It.Ref<Level>.IsAny), Times.Once);
+        _databaseMock.Verify(db => db.InsertLevel(level), Times.Once);
         _cacheMock.Verify(cache => cache.InsertLevelAsync(It.IsAny<Level>()), Times.Never);
     }
 
@@ -171,14 +171,14 @@ public class LeaderboardServiceTests
     {
         // Arrange
         var player = new Player();
-        _databaseMock.Setup(db => db.InsertPlayer(player, out It.Ref<Player>.IsAny)).Returns(false).Verifiable();
+        _databaseMock.Setup(db => db.InsertPlayer(player)).Returns(false).Verifiable();
 
         // Act
         var result = await _service.InsertPlayerAsync(player);
 
         // Assert
         Assert.False(result);
-        _databaseMock.Verify(db => db.InsertPlayer(player, out It.Ref<Player>.IsAny), Times.Once);
+        _databaseMock.Verify(db => db.InsertPlayer(player), Times.Once);
         _cacheMock.Verify(cache => cache.InsertPlayerAsync(It.IsAny<Player>()), Times.Never);
     }
 

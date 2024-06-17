@@ -250,7 +250,8 @@ public class MongoDBRepository : IMongoDBRepository
     }
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync(string phrase) // Search
     {
-        FilterDefinition<Player> filter = Builders<Player>.Filter.Regex(Regex.Replace("Username", @"\s+", ""), new BsonRegularExpression(Regex.Replace(phrase, @"\s+", ""), "i"));
+        string cleanPhrase = Regex.Replace(phrase, @"\s+", "");
+        FilterDefinition<Player> filter = Builders<Player>.Filter.Regex("Username", new BsonRegularExpression(cleanPhrase, "i"));
 
         Log.Information($"Trying to find \"{phrase}\" in Players...");
 

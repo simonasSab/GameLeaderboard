@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaderboardBackEnd.Migrations
 {
     [DbContext(typeof(LeaderboardDBContext))]
-    [Migration("20240616212626_InitialCreate")]
+    [Migration("20240617115823_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

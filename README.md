@@ -1,11 +1,10 @@
 # GameLeaderboard
+##### By Simonas Sabaliauskas
 This is the final project for the C# course from Vilnius Coding School, started on 2024-05-15.
 The program is far from completed, but for the task it should be sufficient.
 Ideally it should be tested more and added to a website.
 I plan to use this system for a 2D game I am making with Unity (draft name: Dimensional Adventure).
 The website could contain the game itself.
-
-                                               Simonas Sabaliauskas
 
 ## Project Structure
 

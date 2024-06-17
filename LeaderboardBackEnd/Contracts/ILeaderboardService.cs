@@ -6,7 +6,7 @@ public interface ILeaderboardService
 {
     // Cache cleaning
     void ToggleCacheCleaning(int cachePeriod);
-    bool GetCacheCleaningON();
+    bool IsCacheCleaningON();
 
     //Random object insertion
     Task InsertRandomLevelAsync();

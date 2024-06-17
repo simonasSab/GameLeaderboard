@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Sinks.SystemConsole;
+using Serilog.Sinks.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Create Serilog configuration
+var log = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log_backend.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+Log.Logger = log;
 
 // Add SQL Server database
 // builder.Services.AddSingleton(_ => new LeaderboardDBContext());
@@ -34,6 +44,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors();
 }
 
 app.UseHttpsRedirection();

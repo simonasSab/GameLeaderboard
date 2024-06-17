@@ -1,5 +1,6 @@
 ﻿using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Models;
+using Microsoft.Identity.Client.Cache;
 using MongoDB.Driver;
 using Serilog;
 
@@ -20,7 +21,7 @@ public class LeaderboardService : ILeaderboardService
     }
 
     // Cache cleaning
-    public bool GetCacheCleaningON()
+    public bool IsCacheCleaningON()
     {
         return CacheCleaningON;
     }
@@ -118,14 +119,18 @@ public class LeaderboardService : ILeaderboardService
     public async Task<IEnumerable<Level>?> GetAllLevelsAsync()
     {
         IEnumerable<Level>? cacheLevels = await _cache.GetAllLevelsAsync();
-        if (cacheLevels == null)
+        if (cacheLevels != null)
         {
-            Log.Information($"Cache is empty, synchronizing...\n");
-        }
-        else
-        {
-            Log.Information($"Successfully retrieved {cacheLevels.Count()} levels from cache\n");
-            return cacheLevels;
+            int cacheCount = cacheLevels.Count();
+            if (cacheCount == 0)
+            {
+                Log.Information($"Cache is empty, synchronizing...\n");
+            }
+            else
+            {
+                Log.Information($"Successfully retrieved {cacheCount} levels from cache\n");
+                return cacheLevels;
+            }
         }
 
         IEnumerable<Level>? levels = _database.GetAllLevels();
@@ -187,14 +192,18 @@ public class LeaderboardService : ILeaderboardService
     public async Task<IEnumerable<Player>?> GetAllPlayersAsync()
     {
         IEnumerable<Player>? cachePlayers = await _cache.GetAllPlayersAsync();
-        if (cachePlayers == null)
+        if (cachePlayers != null)
         {
-            Log.Information($"Cache is empty, synchronizing...\n");
-        }
-        else
-        {
-            Log.Information($"Successfully retrieved {cachePlayers.Count()} players from cache\n");
-            return cachePlayers;
+            int cacheCount = cachePlayers.Count();
+            if (cacheCount == 0)
+            {
+                Log.Information($"Cache is empty, synchronizing...\n");
+            }
+            else
+            {
+                Log.Information($"Successfully retrieved {cacheCount} players from cache\n");
+                return cachePlayers;
+            }
         }
 
         IEnumerable<Player>? players = _database.GetAllPlayers();
@@ -211,14 +220,18 @@ public class LeaderboardService : ILeaderboardService
         IEnumerable<Player>? cachePlayers = await _cache.GetAllPlayersAsync(phrase);
         if (cachePlayers != null)
         {
-            Log.Information($"Found {cachePlayers.Count()} players by phrase \"{phrase}\" in cache\n");
-            return cachePlayers;
+            int cacheCount = cachePlayers.Count();
+            if (cacheCount != 0)
+            {
+                Log.Information($"Found {cacheCount} players by phrase \"{phrase}\" in cache\n");
+                return cachePlayers;
+            }
+            else
+            {
+                Log.Information("Nothing found in cache, trying database...\n");
+            }
         }
-        else
-        {
-            Log.Information("Nothing found in cache, trying database...\n");
-        }
-
+        
         IEnumerable<Player>? players = _database.GetAllPlayers(phrase);
         if (players != null)
             return players;
@@ -275,14 +288,18 @@ public class LeaderboardService : ILeaderboardService
     public async Task<IEnumerable<Score>?> GetAllScoresAsync()
     {
         IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync();
-        if (cacheScores == null)
+        if (cacheScores != null)
         {
-            Log.Information($"Cache is empty, synchronizing...\n");
-        }
-        else
-        {
-            Log.Information($"Successfully retrieved {cacheScores.Count()} scores from cache\n");
-            return cacheScores;
+            int cacheCount = cacheScores.Count();
+            if (cacheCount == 0)
+            {
+                Log.Information($"Cache is empty, synchronizing...\n");
+            }
+            else
+            {
+                Log.Information($"Successfully retrieved {cacheCount} scores from cache\n");
+                return cacheScores;
+            }
         }
 
         IEnumerable<Score>? scores = _database.GetAllScores();
@@ -297,14 +314,18 @@ public class LeaderboardService : ILeaderboardService
     public async Task<IEnumerable<Score>?> GetAllScoresAsync(int searchID, bool playerOrLevel) // Search by player OR level ID
     {
         IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync(searchID, playerOrLevel);
-        if (cacheScores == null)
+        if (cacheScores != null)
         {
-            Log.Information($"Nothing found in cache, trying database...\n");
-        }
-        else
-        {
-            Log.Information($"Found {cacheScores.Count()} scores from cache\n");
-            return cacheScores;
+            int cacheCount = cacheScores.Count();
+            if (cacheCount == 0)
+            {
+                Log.Information($"Nothing found in cache, trying database...\n");
+            }
+            else
+            {
+                Log.Information($"Found {cacheScores.Count()} scores from cache\n");
+                return cacheScores;
+            }
         }
 
         IEnumerable<Score>? scores = _database.GetAllScores(searchID, playerOrLevel);
@@ -315,14 +336,18 @@ public class LeaderboardService : ILeaderboardService
     public async Task<IEnumerable<Score>?> GetAllScoresAsync(int playerID, int levelID) // Search by player AND level ID
     {
         IEnumerable<Score>? cacheScores = await _cache.GetAllScoresAsync(playerID, levelID);
-        if (cacheScores == null)
+        if (cacheScores != null)
         {
-            Log.Information($"Nothing found in cache, trying database...\n");
-        }
-        else
-        {
-            Log.Information($"Found {cacheScores.Count()} scores from cache\n");
-            return cacheScores;
+            int cacheCount = cacheScores.Count();
+            if (cacheCount == 0)
+            {
+                Log.Information($"Nothing found in cache, trying database...\n");
+            }
+            else
+            {
+                Log.Information($"Found {cacheScores.Count()} scores from cache\n");
+                return cacheScores;
+            }
         }
 
         IEnumerable<Score>? scores = _database.GetAllScores(playerID, levelID);

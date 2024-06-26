@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LeaderboardBackEnd.Services;
 
 namespace LeaderboardBackEnd.Models;
 
@@ -16,19 +17,43 @@ public class Player
     public string Username { get; set; }
 
     [BsonIgnore]
-    private string _password;
-    public string Password
+    private string? _password;
+    public string? Password
     {
-        get { return _password; }
-        set { _password = value; }
+        get
+        {
+            if (_password != null)
+                return EncryptionHelper.Decrypt(_password);
+            else
+                return null;
+        }
+        set
+        {
+            if (value != null)
+                _password = EncryptionHelper.Encrypt(value);
+            else
+                _password = null;
+        }
     }
 
     [BsonIgnore]
-    private string _email;
-    public string Email
+    private string? _email;
+    public string? Email
     {
-        get { return _email; }
-        set { _email = value; }
+        get
+        {
+            if (_email != null)
+                return EncryptionHelper.Decrypt(_email);
+            else
+                return null;
+        }
+        set
+        {
+            if (value != null)
+                _email = EncryptionHelper.Encrypt(value);
+            else
+                _email = null;
+        }
     }
 
     public TimeSpan TimePlayed { get; set; } = TimeSpan.Zero;
@@ -67,10 +92,27 @@ public class Player
         Player player = (Player)obj;
         if (player.ID != this.ID)                   return false;
         if (player.Username != this.Username)       return false;
-        if (player.Password != this.Password)       return false;
         if (player.Email != this.Email)             return false;
         if (player.TimePlayed != this.TimePlayed)   return false;
 
         return true;
+    }
+
+    public bool AuthenticateEmail(string? emailAttempt)
+    {
+        if (string.IsNullOrEmpty(emailAttempt))
+            return false;
+        if (emailAttempt == Email)
+            return true;
+        return false;
+    }
+
+    public bool AuthenticatePassword(string? passwordAttempt)
+    {
+        if (string.IsNullOrEmpty(passwordAttempt))
+            return false;
+        if (passwordAttempt == Password)
+            return true;
+        return false;
     }
 }

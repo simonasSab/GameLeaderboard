@@ -1,10 +1,10 @@
 ﻿using LeaderboardBackEnd.Contracts;
 using LeaderboardBackEnd.Enums;
 using LeaderboardBackEnd.Models;
-using MongoDB.Driver;
 using System.Text.RegularExpressions;
 using Serilog;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaderboardBackEnd.Repositories;

@@ -1,11 +1,8 @@
 using LeaderboardBackEnd.Contracts;
-using LeaderboardBackEnd.Databases;
 using LeaderboardBackEnd.Repositories;
 using LeaderboardBackEnd.Services;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Sinks.SystemConsole;
 using Serilog.Sinks.File;

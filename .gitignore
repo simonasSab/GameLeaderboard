@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LeaderboardAPI/dump/GameLeaderboard
+/LeaderboardAPI/key.txt
+/LeaderboardAPI/MongoDumpCommand.txt
+/LeaderboardAPI/MongoRestoreCommand.txt

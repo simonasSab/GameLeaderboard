@@ -17,42 +17,36 @@ public class Player
     public string Username { get; set; }
 
     [BsonIgnore]
-    private string? _password;
-    public string? Password
+    private string _password;
+    public string Password
     {
         get
         {
-            if (_password != null)
-                return EncryptionHelper.Decrypt(_password);
-            else
-                return null;
+            return _password;
         }
         set
         {
-            if (value != null)
-                _password = EncryptionHelper.Encrypt(value);
+            if (string.IsNullOrEmpty(value))
+                _password = "";
             else
-                _password = null;
+                _password = EncryptionHelper.Encrypt(value);
         }
     }
 
     [BsonIgnore]
-    private string? _email;
-    public string? Email
+    private string _email;
+    public string Email
     {
         get
         {
-            if (_email != null)
-                return EncryptionHelper.Decrypt(_email);
-            else
-                return null;
+            return _email;
         }
         set
         {
-            if (value != null)
-                _email = EncryptionHelper.Encrypt(value);
+            if (string.IsNullOrEmpty(value))
+                _email = "";
             else
-                _email = null;
+                _email = EncryptionHelper.Encrypt(value);
         }
     }
 
@@ -60,7 +54,6 @@ public class Player
     public DateTime CreationDateTime { get; set; } = DateTime.Now;
     [NotMapped] [BsonId]
     public ObjectId MongoID { get; set; }
-
 
     public Player()
     { }
@@ -81,6 +74,26 @@ public class Player
         MongoID = mongoID;
     }
 
+    public bool AuthenticatePassword(string passwordAttempt)
+    {
+        string password = passwordAttempt.Trim();
+        if (string.IsNullOrEmpty(password))
+            return false;
+        if (password == EncryptionHelper.Decrypt(_password))
+            return true;
+        return false;
+    }
+
+    public bool AuthenticateEmail(string emailAttempt)
+    {
+        string email = emailAttempt.Trim();
+        if (string.IsNullOrEmpty(email))
+            return false;
+        if (email == EncryptionHelper.Decrypt(_email))
+            return true;
+        return false;
+    }
+
     public override string ToString()
     {
         return $"ID {ID}, username {Username}, time played {TimePlayed.Hours:00}:{TimePlayed.Minutes:00}:{TimePlayed.Seconds:00} since {CreationDateTime}";
@@ -96,23 +109,5 @@ public class Player
         if (player.TimePlayed != this.TimePlayed)   return false;
 
         return true;
-    }
-
-    public bool AuthenticateEmail(string? emailAttempt)
-    {
-        if (string.IsNullOrEmpty(emailAttempt))
-            return false;
-        if (emailAttempt == Email)
-            return true;
-        return false;
-    }
-
-    public bool AuthenticatePassword(string? passwordAttempt)
-    {
-        if (string.IsNullOrEmpty(passwordAttempt))
-            return false;
-        if (passwordAttempt == Password)
-            return true;
-        return false;
     }
 }

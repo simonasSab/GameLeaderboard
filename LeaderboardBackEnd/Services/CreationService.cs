@@ -59,6 +59,4 @@ public class CreationService : ICreationService
 
         return new(playerID, levelID, points, time);
     }
-
-    // To be continued...
 }

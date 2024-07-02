@@ -30,6 +30,34 @@ public class MongoDBRepository : IMongoDBRepository
         CacheCleanCTSource = new();
         CToken = CacheCleanCTSource.Token;
     }
+
+    // Backup & Restore MongoDB
+    public async Task SaveBackup()
+    {
+        System.Diagnostics.Process process = new();
+        System.Diagnostics.ProcessStartInfo startInfo = new();
+        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        startInfo.FileName = "cmd.exe";
+        using (StreamReader sr = new("MongoDumpCommand.txt"))
+            startInfo.Arguments = sr.ReadToEnd();
+        process.StartInfo = startInfo;
+        process.Start();
+        await process.WaitForExitAsync();
+    }
+    public async Task LoadBackup()
+    {
+        System.Diagnostics.Process process = new();
+        System.Diagnostics.ProcessStartInfo startInfo = new();
+        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        startInfo.FileName = "cmd.exe";
+        using (StreamReader sr = new("MongoRestoreCommand.txt"))
+            startInfo.Arguments = sr.ReadToEnd();
+        process.StartInfo = startInfo;
+        process.Start();
+        await process.WaitForExitAsync();
+    }
+
+
     // Cleaning
     public async Task TruncateDatabaseStop()
     {

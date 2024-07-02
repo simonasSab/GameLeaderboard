@@ -4,6 +4,10 @@ namespace LeaderboardBackEnd.Contracts;
 
 public interface ILeaderboardService
 {
+    // MongoDB Backup & Restore
+    Task SaveBackup();
+    Task LoadBackup();
+
     // Cache cleaning
     void ToggleCacheCleaning(int cachePeriod);
 

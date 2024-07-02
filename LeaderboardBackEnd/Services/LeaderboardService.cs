@@ -19,6 +19,16 @@ public class LeaderboardService : ILeaderboardService
         _creationService = creationService;
     }
 
+    // MongoDB Backup & Restore
+    public async Task SaveBackup()
+    {
+        await _cache.SaveBackup();
+    }
+    public async Task LoadBackup()
+    {
+        await _cache.LoadBackup();
+    }
+
     // Cache cleaning
     public void ToggleCacheCleaning(int cachePeriod)
     {

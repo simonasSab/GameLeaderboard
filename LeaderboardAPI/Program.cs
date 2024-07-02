@@ -4,8 +4,6 @@ using LeaderboardBackEnd.Services;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Serilog;
-using Serilog.Sinks.SystemConsole;
-using Serilog.Sinks.File;
 
 var builder = WebApplication.CreateBuilder(args);
 

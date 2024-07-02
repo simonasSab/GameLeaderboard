@@ -5,6 +5,10 @@ namespace LeaderboardBackEnd.Contracts;
 
 public interface IMongoDBRepository
 {
+    // Backup & Restore
+    Task SaveBackup();
+    Task LoadBackup();
+
     // Cleaning
     Task TruncateDatabaseStop();
     Task TruncateDatabaseStart(int cachePeriod);

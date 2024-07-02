@@ -15,27 +15,35 @@ public class MaintenanceController : ControllerBase
     }
 
     // Cache cleaning
-
     [HttpPost("ToggleCacheCleaning")]
     public void ToggleCacheCleaning(int cachePeriod)
     {
         _leaderboardService.ToggleCacheCleaning(cachePeriod);
     }
 
-    // Random object insertion
+    // MongoDB backup
+    [HttpPost("MongoDBBackupSave")]
+    public async Task SaveBackup()
+    {
+        await _leaderboardService.SaveBackup();
+    }
+    [HttpPost("MongoDBBackupRestore")]
+    public async Task LoadBackup()
+    {
+        await _leaderboardService.LoadBackup();
+    }
 
+    // Random object insertion
     [HttpGet("InsertRandomLevelAsync")]
     public async Task<bool> InsertRandomLevelAsync()
     {
         return await _leaderboardService.InsertRandomLevelAsync();
     }
-
     [HttpGet("InsertRandomPlayerAsync")]
     public async Task<bool> InsertRandomPlayerAsync()
     {
         return await _leaderboardService.InsertRandomPlayerAsync();
     }
-
     [HttpGet("InsertRandomScoreAsync")]
     public async Task<bool> InsertRandomScoreAsync()
     {

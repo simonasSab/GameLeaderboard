@@ -5,22 +5,17 @@ namespace LeaderboardBackEnd.Services;
 
 public static class EncryptionHelper
 {
-    // 32-byte key is stored in a limited-access file
-    private static readonly byte[] key = Encoding.UTF8.GetBytes(RetrieveKey());
-    // Cipher
-    private static readonly ChaCha20Poly1305 cipher = new(key);
-
-    private static string RetrieveKey()
+    private static byte[] RetrieveKey() // 32-byte key is stored in a limited-access file
     {
         using (StreamReader streamReader = new("key.txt"))
-            return streamReader.ReadToEnd();
+            return Encoding.UTF8.GetBytes(streamReader.ReadToEnd().Trim());
     }
 
-    public static string? Encrypt(string textString)
+    public static string Encrypt(string textString)
     {
         // Validate text
         if (string.IsNullOrEmpty(textString))
-            return null;
+            return "";
 
         // Turn string into byte[] and save length for later use
         byte[] plaintext = Encoding.UTF8.GetBytes(textString);
@@ -32,8 +27,10 @@ public static class EncryptionHelper
         // Prepare empty byte arrays 
         byte[] ciphertext = new byte[plaintextLength];
         byte[] tag = new byte[16];
-        // Encrypt textBytes and store in ciphertext
-        cipher.Encrypt(nonce, plaintext, ciphertext, tag);
+
+        // Encrypt plaintext and store in ciphertext
+        using (AesGcm cipher = new(RetrieveKey(), 16))
+            cipher.Encrypt(nonce, plaintext, ciphertext, tag);
         // Store nonce, tag and ciphertext in a single byte array
         byte[] result = new byte[28 + plaintextLength];
         Buffer.BlockCopy(nonce, 0, result, 0, 12);
@@ -43,11 +40,11 @@ public static class EncryptionHelper
         return Convert.ToBase64String(result);
     }
 
-    public static string? Decrypt(string cipherMessageString)
+    public static string Decrypt(string cipherMessageString)
     {
         // Validate text
         if (string.IsNullOrEmpty(cipherMessageString))
-            return null;
+            return "";
 
         // Turn string into byte[] and save length for later use
         byte[] cipherMessage = Convert.FromBase64String(cipherMessageString);
@@ -57,11 +54,14 @@ public static class EncryptionHelper
         byte[] tag = new byte[16];
         byte[] plaintext = new byte[cipherBytesLength - 28];
         byte[] ciphertext = new byte[cipherBytesLength - 28];
+
         // Extract nonce, tag and ciphertext from cipherBytes
         Buffer.BlockCopy(cipherMessage, 0, nonce, 0, 12);
         Buffer.BlockCopy(cipherMessage, 12, tag, 0, 16);
         Buffer.BlockCopy(cipherMessage, 28, ciphertext, 0, ciphertext.Length);
-        cipher.Decrypt(nonce, ciphertext, tag, plaintext);
+        // Decrypt ciphertext and store in plaintext
+        using (AesGcm cipher = new(RetrieveKey(), 16))
+            cipher.Decrypt(nonce, ciphertext, tag, plaintext);
 
         return Encoding.UTF8.GetString(plaintext);
     }

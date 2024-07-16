@@ -40,7 +40,7 @@ public class Program
         }
 
         // Initialize server DB and back end service
-        _databaseRepository = new DatabaseRepository("Server=DESKTOP-OD4Q280;Database=GameLeaderboard;Integrated Security=True;TrustServerCertificate=true;");
+        _databaseRepository = new DatabaseRepository("...");
         _creationService = new CreationService(_databaseRepository);
         _leaderboardService = new LeaderboardService(_databaseRepository, _mongoDBRepository, _creationService);
 

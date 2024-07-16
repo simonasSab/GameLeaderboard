@@ -11,6 +11,6 @@ public class LeaderboardDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=DESKTOP-OD4Q280;Database=GameLeaderboard;Integrated Security=True;TrustServerCertificate=true;");
+        optionsBuilder.UseSqlServer("...");
     }
 }

@@ -9,7 +9,7 @@ namespace LeaderboardBackEnd;
 
 public class Program
 {
-    const string connectionUri = "mongodb+srv://simonasSab:HTAc7vsY9TJyfcwO+@gameleaderboard.zntvale.mongodb.net/?retryWrites=true&w=majority&appName=GameLeaderboard";
+    const string connectionUri = "...";
     static IDatabaseRepository _databaseRepository { get; set; }
     static IMongoDBRepository _mongoDBRepository { get; set; }
     static ILeaderboardService _leaderboardService { get; set; }
